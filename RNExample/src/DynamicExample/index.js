@@ -4,17 +4,16 @@ import {
   Text,
   View,
   Dimensions,
-  AppRegistry,
 } from 'react-native';
 import { SynchronousList, SyncRegistry } from 'react-native-synchronous-list';
-import RowTemplate from './RowTemplate';
+import DynamicRowTemplate from './DynamicRowTemplate';
 
 
-const RowTemplateName = 'MyRowTemplate';
+const RowTemplateName = 'MyDynamicRowTemplate';
 
-SyncRegistry.registerComponent(RowTemplateName, () => RowTemplate, ['item.name','item.width','item.height', 'index']);
+SyncRegistry.registerComponent(RowTemplateName, () => DynamicRowTemplate, ['item.name','item.width','item.height', 'index']);
 
-const dataObj = [{
+const complexDataObj = [{
   name: "Row 1",
   width: 850,
   height: 150,
@@ -56,41 +55,25 @@ const dataObj = [{
   height: 150,
 }];
 
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#D5D7FF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
-export default class App extends React.Component {
+export default class DynamicListExample extends React.Component {
   render() {
     return (
-      <View style={styles.container}>
-        <SynchronousList
+      <SynchronousList
           ref={l => {
             this.synchronousList = l;
             setTimeout(() => {
               this.synchronousList.prepareRows();
-            }, 1000)
+            }, 100)
           }}
-          style={{ top: 0, width: Dimensions.get('window').width, height: Dimensions.get('window').height, backgroundColor: 'pink' }}
+          style={{ top: 0, width: Dimensions.get('window').width, height: Dimensions.get('window').height, backgroundColor: '#222222' }}
           horizontal
           templateName={RowTemplateName}
-          rowHeight={150}
           rowWidth={Dimensions.get('window').width}
           dynamicViewSizes
           numRenderRows={10}
-          data={dataObj}
-          loopMode="no-loop"
+          data={complexDataObj}
+          loopMode={SynchronousList.LOOP_MODES.NO_LOOP}
         />
-      </View>
     );
   }
 }
-
-
-AppRegistry.registerComponent('RNExample', () => App);
