@@ -30,6 +30,7 @@
 @property (nonatomic) int initialPosition;
 @property (nonatomic) NSInteger numRenderRows;
 @property (nonatomic) NSString *loopMode;
+@property (nonatomic) NSString *templateName;
 @property (nonatomic) NSMutableArray *data;
 @property (nonatomic) BOOL horizontal;
 @property (nonatomic) BOOL paging;

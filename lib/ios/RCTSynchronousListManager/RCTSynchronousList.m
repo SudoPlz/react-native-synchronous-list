@@ -58,10 +58,11 @@ ScrollViewBindFactory* bindFactory;
     _initialPosition = 0;
     _horizontal = NO;
     _paging = NO;
+    _templateName = @"RNSynchronousListRowTemplate";
 //    self.pagingEnabled = _paging;
     
 
-    //    emptyRowView = [[RCCSyncRootView alloc] initWithBridge:_bridge moduleName:@"RNInfiniteScrollViewRowTemplate" initialProperties:@{}];
+    //    emptyRowView = [[RCCSyncRootView alloc] initWithBridge:_bridge moduleName:@"RNSynchronousListRowTemplate" initialProperties:@{}];
     //    emptyRowView.isEmptyView = YES;
     
     self.delegate = self;
@@ -385,7 +386,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
                        curRowValue = [data objectAtIndex:i];
                      }
                      
-                     RCCSyncRootView *rootView = [[RCCSyncRootView alloc] initWithBridge:_bridge moduleName:@"RNInfiniteScrollViewRowTemplate" initialProperties:curRowValue ? @{ @"item" : curRowValue, @"index": [NSNumber numberWithInt:i] } : @{ @"index": [NSNumber numberWithInt:i]}];
+                     RCCSyncRootView *rootView = [[RCCSyncRootView alloc] initWithBridge:_bridge moduleName:_templateName initialProperties:curRowValue ? @{ @"item" : curRowValue, @"index": [NSNumber numberWithInt:i] } : @{ @"index": [NSNumber numberWithInt:i]}];
                      rootView.boundToIndex = i;
                      CGPoint center = rootView.center;
                      

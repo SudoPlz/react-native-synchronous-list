@@ -11,6 +11,7 @@ RCT_EXPORT_MODULE();
     return _scrollView;
 }
 
+RCT_EXPORT_VIEW_PROPERTY(templateName, NSString)
 RCT_EXPORT_VIEW_PROPERTY(rowHeight, float)
 RCT_EXPORT_VIEW_PROPERTY(rowWidth, float)
 RCT_EXPORT_VIEW_PROPERTY(numRenderRows, NSInteger)
