@@ -1,13 +1,13 @@
 # react-native-synchronous-list
 
-####What:
+#### What:
 A list that uses a template to render it's children through the native side of react-native.
 
-####Why:
+#### Why:
 Because trying to render children on the fly while scrolling sends to much information through the RNBridge and blocks it
 As a result we see a white flicker when scrolling fast, plus it doesn't give the native feeling that native lists give.
 
-####How:
+#### How:
 If you want to learn more check out Tal Kol. He's the person that thought of that brilliant idea.
 
 His talk in react-native-eu should be published soon, but until then here are [the presentation slides](https://speakerdeck.com/talkol/going-over-the-speed-limit-synchronous-rendering-in-react-native).
