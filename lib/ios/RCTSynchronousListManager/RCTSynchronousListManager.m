@@ -1,6 +1,6 @@
 #import "RCTSynchronousListManager.h"
 
-@implementation SynchronousListManager
+@implementation RCTSynchronousListManager
 
 RCT_EXPORT_MODULE();
 
