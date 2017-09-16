@@ -26,7 +26,7 @@ or
 `$ yarn add react-native-synchronous-list`
 
 
-2 . `$ react-native link react-native-synchronous-list` and check `MainApplication.java` to verify the package was added.
+2 . `$ react-native link react-native-synchronous-list`
 
 3 .  rebuild your project
 
