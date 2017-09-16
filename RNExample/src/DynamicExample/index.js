@@ -64,9 +64,12 @@ export default class DynamicListExample extends React.Component {
             setTimeout(() => {
               this.synchronousList.prepareRows();
             }, 100)
+            setInterval(async () => {
+            const curViewIndex = await this.synchronousList.getCurrentViewIndex();
+            console.log(`Currently at :${curViewIndex}`);
+          }, 500);
           }}
           style={{ top: 0, width: Dimensions.get('window').width, height: Dimensions.get('window').height, backgroundColor: '#222222' }}
-          horizontal
           templateName={RowTemplateName}
           rowWidth={Dimensions.get('window').width}
           dynamicViewSizes

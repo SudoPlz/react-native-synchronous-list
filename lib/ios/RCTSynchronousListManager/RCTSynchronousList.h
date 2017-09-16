@@ -23,6 +23,7 @@
 - (void) prependDataToDataSource: (NSArray*) newData;
 - (void) updateDataAtIndex: (int) rowIndex withNewData: (id) newData;
 - (void) setScrollerZoom: (float) zoomScale animated: (BOOL) animated;
+- (int) getCurrentViewIndex;
     
 @property (nonatomic) float rowHeight;
 @property (nonatomic) float rowWidth;

@@ -43,5 +43,10 @@ RCT_EXPORT_METHOD(setScrollerZoom: (float) zoomScale animated: (BOOL) animated) 
     [_scrollView setScrollerZoom:zoomScale animated:animated];
 }
 
+RCT_EXPORT_METHOD(getCurrentViewIndex:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve([NSNumber numberWithInt:[_scrollView getCurrentViewIndex]]);
+}
+
 
 @end
