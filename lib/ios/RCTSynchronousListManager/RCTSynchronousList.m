@@ -417,7 +417,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
                                NSLog(@" @@@@@@ ROWS CREATED");
                                rowsAreCreated = YES;
                                if (_horizontal) { // horizontal mode
-                                   if (self.rowWidth <= 0) {
+                                   if (!_dynamicViewSizes && self.rowWidth <= 0) {
                                        RCTLogError(@"RNInfiniteScrollView: We need a rowWidth greater than zero for horizontal mode. Cur value: %f", self.rowWidth);
                                        
                                    }
@@ -433,7 +433,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
                                    
                                    self.contentSize = CGSizeMake(totalContentWidth, self.frame.size.height);
                                } else { // vertical mode
-                                   if (self.rowHeight <= 0) {
+                                   if (!_dynamicViewSizes && self.rowHeight <= 0) {
                                        RCTLogError(@"RNInfiniteScrollView: We need a rowHeight greater than zero for horizontal={false}. Cur value: %f", self.rowHeight);
                                        
                                    }
