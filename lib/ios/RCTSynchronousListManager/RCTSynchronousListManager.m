@@ -17,6 +17,7 @@ RCT_EXPORT_VIEW_PROPERTY(rowWidth, float)
 RCT_EXPORT_VIEW_PROPERTY(numRenderRows, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(loopMode, NSString)
 RCT_EXPORT_VIEW_PROPERTY(data, NSArray)
+RCT_EXPORT_VIEW_PROPERTY(defaultChildData, NSDictionary)
 RCT_EXPORT_VIEW_PROPERTY(initialPosition, int)
 RCT_EXPORT_VIEW_PROPERTY(horizontal, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(paging, BOOL)
@@ -47,6 +48,7 @@ RCT_EXPORT_METHOD(getCurrentViewIndex:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     resolve([NSNumber numberWithInt:[_scrollView getCurrentViewIndex]]);
 }
+
 
 
 @end

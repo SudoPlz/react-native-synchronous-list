@@ -18,7 +18,7 @@
       return @{ @"item" : [data objectAtIndex:rowIndex], @"index": [NSNumber numberWithInt:rowIndex]};
     }
   }
-  return @{};
+  return nil;
 }
 
 @end

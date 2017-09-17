@@ -40,7 +40,7 @@
       }
     }
   }
-  return @{};
+  return nil;
 }
 
 @end

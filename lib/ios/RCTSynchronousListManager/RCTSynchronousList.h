@@ -33,6 +33,7 @@
 @property (nonatomic) NSString *loopMode;
 @property (nonatomic) NSString *templateName;
 @property (nonatomic) NSMutableArray *data;
+@property (nonatomic) NSDictionary *defaultChildData;
 @property (nonatomic) BOOL horizontal;
 @property (nonatomic) BOOL paging;
 @property (nonatomic) BOOL dynamicViewSizes;

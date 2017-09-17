@@ -60,11 +60,8 @@ ScrollViewBindFactory* bindFactory;
         _paging = NO;
         rowsAreCreated = NO;
         _templateName = @"RNSynchronousListRowTemplate";
+        _defaultChildData = @{ @"item": @{ @"name": @"empty", @"width": @200, @"height": @350}};
         //    self.pagingEnabled = _paging;
-        
-        
-        //    emptyRowView = [[RCCSyncRootView alloc] initWithBridge:_bridge moduleName:@"RNSynchronousListRowTemplate" initialProperties:@{}];
-        //    emptyRowView.isEmptyView = YES;
         
         self.delegate = self;
         self.backgroundColor = [UIColor whiteColor];
@@ -110,7 +107,17 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
                 totalViewSize += [curRowDt[@"height"] floatValue];
             }
         } else {
-            totalViewSize += _horizontal ? self.rowWidth : self.rowHeight;
+            if (_dynamicViewSizes) {
+                totalViewSize +=
+                    _horizontal
+                    ?
+                    [[self.defaultChildData valueForKeyPath:@"item.width"] floatValue]
+                    :
+                    [[self.defaultChildData valueForKeyPath:@"item.height"] floatValue];
+//                NSLog(@"from %d to child %d, iteration: %d, Now adding %f to total view size: (%f)", fromIndex, toIndex, i, [[self.defaultChildData valueForKeyPath:@"item.width"] floatValue], totalViewSize);
+            } else {
+                totalViewSize += _horizontal ? self.rowWidth : self.rowHeight;
+            }
         }
     }
     return totalViewSize;
@@ -141,7 +148,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
             && _renderRows.count > 0 // and we got renderRows
             && distanceFromCenter > (contentWidth * RECENTER_PERCENTAGE)) // and we have scrolled more than 25% ahead
         {
-//            NSLog(@" Must recenter because distance from center (%f) is more than 25% (%f), contentWidth=%f", distanceFromCenter, contentWidth * RECENTER_PERCENTAGE, contentWidth);
+            //            NSLog(@" Must recenter because distance from center (%f) is more than 25% (%f), contentWidth=%f", distanceFromCenter, contentWidth * RECENTER_PERCENTAGE, contentWidth);
             [self recenterTo: CGPointMake(centerOffsetX, 0)];
         }
     } else { // vertical mode
@@ -160,7 +167,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 - (void) recenterTo: (CGPoint) recenterPoint withNewBindingsStartingFrom: (NSNumber*) bindStart {
     CGPoint currentOffset = [self contentOffset]; // cur scroll values
     if (_horizontal) { // horizontal mode
-//        NSLog(@" Now recentering to x: %f, y: %f", recenterPoint.x, currentOffset.x);
+        //        NSLog(@" Now recentering to x: %f, y: %f", recenterPoint.x, currentOffset.x);
         
         // setting the Y value to be equal to the center Y point
         self.contentOffset = CGPointMake(recenterPoint.x, currentOffset.y);
@@ -170,7 +177,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
         for (RCCSyncRootView *view in _renderRows) {
             CGPoint center = view.center;
             center.x += (recenterPoint.x - currentOffset.x);
-//            NSLog(@"View %d will now be placed at %f", i, center.x);
+            //            NSLog(@"View %d will now be placed at %f", i, center.x);
             view.center = center;
             if (bindStart != nil) {
                 [self bindView:view toRowIndex:(int)(bindStart.intValue + i)];
@@ -272,17 +279,20 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 - (void)moveFirstRenderRowToEnd {
     //  NSLog(@" abt to moveFirstRenderRowToEnd");
     if (rowsAreCreated == YES && self.numRenderRows > 0 && [_renderRows count] > 0) {
-//        NSLog(@"************* moveFirstRenderRowToEnd");
+        //        NSLog(@"************* moveFirstRenderRowToEnd");
         RCCSyncRootView *view = _renderRows[_firstRenderRow];
         CGPoint center = view.center;
-        
+        int newIndexForLastRow = _firstRowIndex + (int) self.numRenderRows;
         float newViewOffset = 0;
         if (self.dynamicViewSizes) { // if the sizing calculation is dynamic
             // calculate and add all the view heights
-            newViewOffset = [self calculateViewSizeFromIndex:_firstRowIndex toIndex:(_firstRowIndex + (int) self.numRenderRows)];
+            newViewOffset = [self calculateViewSizeFromIndex:_firstRowIndex toIndex:newIndexForLastRow];
+            
+//            NSLog(@"View offset for %d is %f", newIndexForLastRow, newViewOffset);
             
             // and add 1 row height to the _firstRenderRowOffset
-            _firstRenderRowOffset += [self calculateViewSizeFromIndex:_firstRowIndex toIndex:(_firstRowIndex + 1)];
+            _firstRenderRowOffset += [self calculateViewSizeFromIndex:_firstRowIndex toIndex:_firstRowIndex + 1];
+//            NSLog(@"View offset for %d is %f", newIndexForLastRow, _firstRenderRowOffset);
             
         } else { // else if the sizing is static
             
@@ -302,14 +312,14 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
         
         _firstRenderRow = (_firstRenderRow + 1) % self.numRenderRows;
         _firstRowIndex += 1;
-        [self bindView:view toRowIndex:(int)(_firstRowIndex + self.numRenderRows)];
+        [self bindView:view toRowIndex:(int)newIndexForLastRow];
     }
 }
 
 - (void)moveLastRenderRowToBeginning {
     //  NSLog(@" abt to moveLastRenderRowToBeginning");
     if (rowsAreCreated == YES && self.numRenderRows > 0 && [_renderRows count] > 0) {
-//        NSLog(@"******* moveLastRenderRowToBeginning");
+        //        NSLog(@"******* moveLastRenderRowToBeginning");
         int _lastRenderRow = (_firstRenderRow + self.numRenderRows - 1) % (int)self.numRenderRows;
         RCCSyncRootView *view = _renderRows[_lastRenderRow];
         CGPoint center = view.center;
@@ -342,7 +352,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
         [self bindView:view toRowIndex:(_firstRowIndex - 1)];
         _firstRenderRow = _lastRenderRow;
         _firstRowIndex -= 1;
-//        NSLog(@"Moved LAST child to  beggining, on %f (%f), so the first render row is now %d", center.x, _firstRenderRowOffset, _firstRowIndex);
+        //        NSLog(@"Moved LAST child to  beggining, on %f (%f), so the first render row is now %d", center.x, _firstRenderRowOffset, _firstRowIndex);
     }
 }
 
@@ -359,12 +369,15 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 - (void)bindView:(RCCSyncRootView *)child toRowIndex:(int)rowIndex
 {
     if (child.boundToIndex != rowIndex || rowIndex == 0) {
-        //    NSLog(@"Now requesting to bind row index %d", rowIndex);
+//            NSLog(@"Now requesting to bind row index %d", rowIndex);
         NSDictionary* newDt = [bindFactory getValueForRow:rowIndex andDatasource:data];
         if (newDt) {
-//            NSLog(@"updating child %d w/  DATA %@", rowIndex, newDt);
+            //            NSLog(@"updating child %d w/  DATA %@", rowIndex, newDt);
             child.boundToIndex = rowIndex;
             [child updateProps:newDt];
+        } else {
+            child.boundToIndex = rowIndex;
+            [child updateProps:_defaultChildData];
         }
     }
 }
@@ -373,84 +386,84 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 
 - (void) createRows {
-//    NSLog(@"**** ABOUT TO CREATE NO of rows: %ld", self.numRenderRows);
+    //    NSLog(@"**** ABOUT TO CREATE NO of rows: %ld", self.numRenderRows);
     //  NSLog(@" loop? %@", self.loopMode);
     if (!rowsAreCreated) { // if the rows are not created
         createdRowCnt = 0;
         
         for (int i = 0; i < self.numRenderRows; i++)
         {
-//            NSLog(@"invoking row %d", i);
+            //            NSLog(@"invoking row %d", i);
             dispatch_async(dispatch_get_main_queue(), ^
-            {
-                id curRowValue;
-                if (data != nil && [data count] > i) {
-                   curRowValue = [data objectAtIndex:i];
-                }
-
-                RCCSyncRootView *rootView = [[RCCSyncRootView alloc] initWithBridge:_bridge moduleName:_templateName initialProperties:curRowValue ? @{ @"item" : curRowValue, @"index": [NSNumber numberWithInt:i] } : @{ @"index": [NSNumber numberWithInt:i]}];
-                rootView.boundToIndex = i;
-                CGPoint center = rootView.center;
-
-                float newViewOffset = 0;
-                if (self.dynamicViewSizes) { // if the sizing calculation is dynamic
-                   // calculate and add all the view heights
-                   newViewOffset = [self calculateViewSizeFromIndex:0 toIndex:i];
-                } else { // else if the sizing is static
-                   
-                   // calculate and add all the view heights
-                   newViewOffset = (i * [self calculateViewSizeForRowCnt: 1]);
-                }
-
-                if (_horizontal) { // horizontal mode
-                   center.x = newViewOffset;
-                } else { // vertical mode
-                   center.y = newViewOffset;
-                }
-                //                               NSLog(@"******* ITEM AT %d, will be placed that at x: %f, y: %f", i, center.x, center.y);
-
-                rootView.center = center;
-                rootView.backgroundColor = [UIColor yellowColor];
-                [_renderRows addObject:rootView];
-                [self insertSubview:rootView atIndex:i];
-                createdRowCnt ++;
-                //                       NSLog(@" Created row %d out of %ld", createdRowCnt, (long)self.numRenderRows);
-                if (createdRowCnt == self.numRenderRows) {
-                //                                   NSLog(@" @@@@@@ ROWS CREATED");
-                   rowsAreCreated = YES;
-                   if (_horizontal) { // horizontal mode
-                        if (!_dynamicViewSizes && self.rowWidth <= 0) {
-                           RCTLogError(@"RNSynchronousList: We need a rowWidth greater than zero for horizontal mode. Cur value: %f", self.rowWidth);
-                        }
-                        if (self.rowHeight > 0) {
-                           RCTLogWarn(@"RNSynchronousList: You don't have to specify the rowHeight on horizontal mode");
-                           NSLog(@"RNSynchronousList: You don't have to specify the rowHeight on horizontal mode");
-                        }
-                        float totalContentWidth = self.dynamicViewSizes ?
-                           [self calculateViewSizeFromIndex:0 toIndex:((int) data.count - 1)]
-                           :
-                           [self calculateViewSizeForRowCnt:((int) data.count - 1)];
-                       self.contentSize = CGSizeMake(totalContentWidth, self.frame.size.height);
-                    } else { // vertical mode
-                        if (!_dynamicViewSizes && self.rowHeight <= 0) {
-                           RCTLogError(@"RNSynchronousList: We need a rowHeight greater than zero for horizontal={false}. Cur value: %f", self.rowHeight);
-                        }
-                        if (self.rowWidth > 0) {
-                           RCTLogWarn(@"RNSynchronousList: You don't really have to specify the rowWidth on horizontal={false} mode");
-                           NSLog(@"RNSynchronousList: You don't really have to specify the rowWidth on horizontal={false} mode");
-                        }
-                        float totalContentHeight = self.dynamicViewSizes ?
-                            [self calculateViewSizeFromIndex:0 toIndex:((int) data.count - 1)]
-                            :
-                            [self calculateViewSizeForRowCnt:((int) data.count - 1)];
-                        self.contentSize = CGSizeMake(self.frame.size.width, totalContentHeight);
-                    }
-                   
-                    if (_initialPosition != 0) {
-                       [self scrollToItemWithIndex:_initialPosition animated:NO];
-                    }
-                }
-            });
+                           {
+                               id curRowValue;
+                               if (data != nil && [data count] > i) {
+                                   curRowValue = [data objectAtIndex:i];
+                               }
+                               
+                               RCCSyncRootView *rootView = [[RCCSyncRootView alloc] initWithBridge:_bridge moduleName:_templateName initialProperties:curRowValue ? @{ @"item" : curRowValue, @"index": [NSNumber numberWithInt:i] } : _defaultChildData];
+                               rootView.boundToIndex = i;
+                               CGPoint center = rootView.center;
+                               
+                               float newViewOffset = 0;
+                               if (self.dynamicViewSizes) { // if the sizing calculation is dynamic
+                                   // calculate and add all the view heights
+                                   newViewOffset = [self calculateViewSizeFromIndex:0 toIndex:i];
+                               } else { // else if the sizing is static
+                                   
+                                   // calculate and add all the view heights
+                                   newViewOffset = (i * [self calculateViewSizeForRowCnt: 1]);
+                               }
+                               
+                               if (_horizontal) { // horizontal mode
+                                   center.x = newViewOffset;
+                               } else { // vertical mode
+                                   center.y = newViewOffset;
+                               }
+                               //                               NSLog(@"******* ITEM AT %d, will be placed that at x: %f, y: %f", i, center.x, center.y);
+                               
+                               rootView.center = center;
+                               rootView.backgroundColor = [UIColor yellowColor];
+                               [_renderRows addObject:rootView];
+                               [self insertSubview:rootView atIndex:i];
+                               createdRowCnt ++;
+                               //                       NSLog(@" Created row %d out of %ld", createdRowCnt, (long)self.numRenderRows);
+                               if (createdRowCnt == self.numRenderRows) {
+                                   //                                   NSLog(@" @@@@@@ ROWS CREATED");
+                                   rowsAreCreated = YES;
+                                   if (_horizontal) { // horizontal mode
+                                       if (!_dynamicViewSizes && self.rowWidth <= 0) {
+                                           RCTLogError(@"RNSynchronousList: We need a rowWidth greater than zero for horizontal mode. Cur value: %f", self.rowWidth);
+                                       }
+                                       if (self.rowHeight > 0) {
+                                           RCTLogWarn(@"RNSynchronousList: You don't have to specify the rowHeight on horizontal mode");
+                                           NSLog(@"RNSynchronousList: You don't have to specify the rowHeight on horizontal mode");
+                                       }
+                                       float totalContentWidth = self.dynamicViewSizes ?
+                                       [self calculateViewSizeFromIndex:0 toIndex:((int) data.count - 1)]
+                                       :
+                                       [self calculateViewSizeForRowCnt:((int) data.count - 1)];
+                                       self.contentSize = CGSizeMake(totalContentWidth, self.frame.size.height);
+                                   } else { // vertical mode
+                                       if (!_dynamicViewSizes && self.rowHeight <= 0) {
+                                           RCTLogError(@"RNSynchronousList: We need a rowHeight greater than zero for horizontal={false}. Cur value: %f", self.rowHeight);
+                                       }
+                                       if (self.rowWidth > 0) {
+                                           RCTLogWarn(@"RNSynchronousList: You don't really have to specify the rowWidth on horizontal={false} mode");
+                                           NSLog(@"RNSynchronousList: You don't really have to specify the rowWidth on horizontal={false} mode");
+                                       }
+                                       float totalContentHeight = self.dynamicViewSizes ?
+                                       [self calculateViewSizeFromIndex:0 toIndex:((int) data.count - 1)]
+                                       :
+                                       [self calculateViewSizeForRowCnt:((int) data.count - 1)];
+                                       self.contentSize = CGSizeMake(self.frame.size.width, totalContentHeight);
+                                   }
+                                   
+                                   if (_initialPosition != 0) {
+                                       [self scrollToItemWithIndex:_initialPosition animated:NO];
+                                   }
+                               }
+                           });
         }
     } else { // if rows are already created
         NSLog(@"RNSynchronousList: No need to prepareRows more than once.");
@@ -669,8 +682,24 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 #pragma mark - Setter functions
 
 //- (void) setRowHeight:(float)rowHeight{
-//  _rowHeight = rowHeight;
-//  NSLog(@"####################### rowHeight was SET");
+//    _rowHeight = rowHeight;
+//    
+    // now we'll change the defaultChildData to reflect the new height
+//    NSMutableDictionary* defaultItemDt = _defaultChildData[@"item"];
+//    [defaultItemDt removeObjectForKey:@"height"];
+//    [defaultItemDt setObject:[NSNumber numberWithFloat:rowHeight] forKey:@"height"];
+//    [_defaultChildData removeObjectForKey:@"item"];
+//    [_defaultChildData setObject:defaultItemDt forKey:@"item"];
+//}
+
+//- (void) setRowWidth:(float)rowWidth {
+//    _rowWidth = rowWidth;
+//    // now we'll change the defaultChildData to reflect the new width
+//    NSMutableDictionary* defaultItemDt = _defaultChildData[@"item"];
+//    [defaultItemDt removeObjectForKey:@"width"];
+//    [defaultItemDt setObject:[NSNumber numberWithFloat:rowWidth] forKey:@"width"];
+//    [_defaultChildData removeObjectForKey:@"item"];
+//    [_defaultChildData setObject:defaultItemDt forKey:@"item"];
 //}
 
 - (void) setLoopMode:(NSString *)loopMode {
