@@ -1,19 +1,18 @@
 package com.sudoplz.rnsynchronouslistmanager;
 
-import android.content.Context;
-
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
+import com.sudoplz.rnsynchronouslistmanager.List.SynchronousRecyclerView;
 
 class SynchronousListModule extends ReactContextBaseJavaModule {
-    private RCTACCalendar calendarInstance;
+    private SynchronousRecyclerView calendarInstance;
 
-    public SynchronousListModule (ReactApplicationContext reactContext, RCTACCalendarManager calManager) {
+    public SynchronousListModule (ReactApplicationContext reactContext, SynchronousListManager calManager) {
         super(reactContext);
         if (calManager != null) {
-            calendarInstance = calManager.getCalendarInstance();
+            calendarInstance = calManager.getListView();
         }
     }
 

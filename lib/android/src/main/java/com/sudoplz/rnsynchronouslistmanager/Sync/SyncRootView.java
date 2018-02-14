@@ -54,7 +54,7 @@ public class SyncRootView extends ReactRootView {
         knownPropNameMap.put("bgColor", "backgroundColor");
         knownPropNameMap.put("bordColor", "borderColor");
         knownPropNameMap.put("txtColor", "color");
-        
+
         final SyncRootView self = this;
         this.post(new Runnable() {
             // Post in the parent's message queue to make sure the parent

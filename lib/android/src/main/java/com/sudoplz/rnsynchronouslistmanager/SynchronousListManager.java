@@ -1,17 +1,17 @@
 package com.sudoplz.rnsynchronouslistmanager;
 
-import android.widget.LinearLayout;
 import com.sudoplz.rnsynchronouslistmanager.List.SynchronousRecyclerView;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.sudoplz.rnsynchronouslistmanager.Sync.SyncRootView;
+
 /**
  * Created by SudoPlz on 05/02/2018.
  */
 
 public class SynchronousListManager extends ViewGroupManager <SynchronousRecyclerView> {
-    public static final String REACT_CLASS = "SynchronousListManager";
     private SynchronousRecyclerView listView;
 
 
@@ -25,7 +25,7 @@ public class SynchronousListManager extends ViewGroupManager <SynchronousRecycle
 
     @Override
     public String getName() {
-        return REACT_CLASS;
+        return "RCTSynchronousList";
     }
 
 
@@ -34,7 +34,7 @@ public class SynchronousListManager extends ViewGroupManager <SynchronousRecycle
         return listView;
     }
 
-    public SynchronousRecyclerView getCalendarInstance() {
+    public SynchronousRecyclerView getListView() {
         return listView;
     }
 

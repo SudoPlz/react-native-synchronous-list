@@ -26,7 +26,7 @@ public class SyncRegistry extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "RCCACSyncRegistry";
+        return "RCCSyncRegistry";
     }
 
     public Map<String, Recipe> getRegistry() {

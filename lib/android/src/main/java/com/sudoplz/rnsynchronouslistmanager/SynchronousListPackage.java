@@ -1,9 +1,7 @@
 package com.sudoplz.rnsynchronouslistmanager;
 
-import com.sudoplz.rnsynchronouslistmanager.SynchronousListManager;
-import com.sudoplz.rnsynchronouslistmanager.SynchronousListModule;
+
 import com.sudoplz.rnsynchronouslistmanager.Sync.SyncRegistry;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;

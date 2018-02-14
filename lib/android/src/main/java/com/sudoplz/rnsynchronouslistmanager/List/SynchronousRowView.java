@@ -1,10 +1,7 @@
 package com.sudoplz.rnsynchronouslistmanager.List;
 
-import android.content.Context;
-import android.util.AttributeSet;
 
 import com.sudoplz.rnsynchronouslistmanager.Sync.SyncRootView;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.bridge.ReactContext;
 

@@ -1,25 +1,16 @@
 package com.sudoplz.rnsynchronouslistmanager.Utils;
 
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.jni.HybridData;
+
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactBridge;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableNativeMap;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 
-import com.facebook.jni.HybridData;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.WritableNativeMap;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
