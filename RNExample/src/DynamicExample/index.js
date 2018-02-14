@@ -11,8 +11,6 @@ import DynamicRowTemplate from './DynamicRowTemplate';
 
 const RowTemplateName = 'MyDynamicRowTemplate';
 
-SyncRegistry.registerComponent(RowTemplateName, () => DynamicRowTemplate, ['item.name','item.width','item.height', 'index']);
-
 const complexDataObj = [{
   name: "Row 1",
   width: 850,
@@ -55,7 +53,7 @@ const complexDataObj = [{
   height: 150,
 }];
 
-export default class DynamicListExample extends React.Component {
+class DynamicListExample extends React.Component {
   render() {
     return (
       <SynchronousList
@@ -80,3 +78,7 @@ export default class DynamicListExample extends React.Component {
     );
   }
 }
+DynamicListExample.registerRecipe = () => {
+  SyncRegistry.registerComponent(RowTemplateName, () => DynamicRowTemplate, ['item.name','item.width','item.height', 'index']);
+}
+export default DynamicListExample;

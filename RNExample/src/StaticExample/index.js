@@ -10,7 +10,6 @@ import StaticRowTemplate from './StaticRowTemplate';
 
 const RowTemplateName = 'MyStaticRowTemplate';
 
-SyncRegistry.registerComponent(RowTemplateName, () => StaticRowTemplate, ['item', 'index']);
 
 let simpleDataObj = [];
 
@@ -18,7 +17,7 @@ for (const i = 0; i < 15000; i++) {
   simpleDataObj.push(`Row ${i}`);
 }
 
-export default class App extends React.Component {
+class StaticListExample extends React.Component {
   render() {
 
     return (
@@ -44,3 +43,8 @@ export default class App extends React.Component {
     );
   }
 }
+
+StaticListExample.registerRecipe = () => {
+  SyncRegistry.registerComponent(RowTemplateName, () => StaticRowTemplate, ['item', 'index']);
+}
+export default StaticListExample;
