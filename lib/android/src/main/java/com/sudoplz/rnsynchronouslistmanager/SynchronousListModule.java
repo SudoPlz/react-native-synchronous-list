@@ -7,12 +7,14 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 
-class SynchronousListManagerModule extends ReactContextBaseJavaModule {
-    private Context context;
+class SynchronousListModule extends ReactContextBaseJavaModule {
+    private RCTACCalendar calendarInstance;
 
-    public SynchronousListManagerModule(ReactApplicationContext reactContext) {
+    public SynchronousListModule (ReactApplicationContext reactContext, RCTACCalendarManager calManager) {
         super(reactContext);
-        this.context = reactContext;
+        if (calManager != null) {
+            calendarInstance = calManager.getCalendarInstance();
+        }
     }
 
     /**
@@ -25,7 +27,9 @@ class SynchronousListManagerModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void reactNativeSynchronousList(Callback onSuccess, Callback onFailure) {
-        onSuccess.invoke("Hello World!");
+    public void prepareRows(Promise promise) {
+        if (calendarInstance  != null) {
+            calendarInstance.prepareRows(promise);
+        }
     }
 }

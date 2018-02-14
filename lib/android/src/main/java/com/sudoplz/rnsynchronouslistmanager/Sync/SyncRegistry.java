@@ -1,0 +1,50 @@
+package com.sudoplz.rnsynchronouslistmanager.Sync;
+
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by SudoPlz on 02/11/2017.
+ */
+
+public class SyncRegistry extends ReactContextBaseJavaModule {
+
+    private Map<String, Recipe> recipeRegistry;
+    private long lastTag;
+
+    public SyncRegistry(ReactApplicationContext reactContext) {
+        super(reactContext);
+        recipeRegistry = new HashMap();
+        lastTag = 1000001;
+    }
+
+    @Override
+    public String getName() {
+        return "RCCACSyncRegistry";
+    }
+
+    public Map<String, Recipe> getRegistry() {
+        return recipeRegistry;
+    }
+
+    @ReactMethod
+    public void registerRecipe(String registeredName, ReadableMap props, ReadableArray recipe) {
+//        Toast.makeText(getReactApplicationContext(), message, duration).show();
+//        [self.registry setObject:@{@"props": props, @"recipe": recipe} forKey:registeredName];
+        recipeRegistry.put(registeredName, new Recipe(props,recipe));
+    }
+
+    public long getLastTag() {
+        return lastTag;
+    }
+
+    public void setLastTag(long newLastTag) {
+        lastTag = newLastTag;
+    }
+}
