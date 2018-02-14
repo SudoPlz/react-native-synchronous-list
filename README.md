@@ -86,7 +86,7 @@ See the RNExample folder
 
 ## Todo
 - Find out why there's a short delay when rendering thousands of children in our native list implementation
-- Android version on the #android branch
+- WIP Android version on the [#android branch](https://github.com/SudoPlz/react-native-synchronous-list/tree/android)
 
 ## License
 MIT © Ioannis Kokkinidis 2017-2018
