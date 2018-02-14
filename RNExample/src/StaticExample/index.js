@@ -12,9 +12,11 @@ const RowTemplateName = 'MyStaticRowTemplate';
 
 SyncRegistry.registerComponent(RowTemplateName, () => StaticRowTemplate, ['item', 'index']);
 
-const simpleDataObj =
-["Row 1", "Row 2", "Row 3", "Row 4", "Row 5", "Row 6", "Row 7"];
+let simpleDataObj = [];
 
+for (const i = 0; i < 15000; i++) {
+  simpleDataObj.push(`Row ${i}`);
+}
 
 export default class App extends React.Component {
   render() {
@@ -27,15 +29,15 @@ export default class App extends React.Component {
             this.synchronousList.prepareRows();
           }, 100)
 
-          setInterval(async () => {
-            const curViewIndex = await this.synchronousList.getCurrentViewIndex();
-            console.log(`Currently at :${curViewIndex}`);
-          }, 500);
+          // setInterval(async () => {
+          //   const curViewIndex = await this.synchronousList.getCurrentViewIndex();
+          //   console.log(`Currently at :${curViewIndex}`);
+          // }, 500);
         }}
         style={{ top: 0, width: Dimensions.get('window').width, height: Dimensions.get('window').height, backgroundColor: '#222222' }}
         templateName={RowTemplateName}
-        rowHeight={260}
-        numRenderRows={10}
+        rowHeight={60}
+        numRenderRows={30}
         data={simpleDataObj}
         loopMode={SynchronousList.LOOP_MODES.REPEAT_EMPTY}
       />
