@@ -1,40 +1,22 @@
 package com.sudoplz.rnsynchronouslistmanager.Sync;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.AttributeSet;
-import android.view.View;
+
 
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedArray;
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedMap;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactRootView;
-import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.modules.core.ChoreographerCompat;
-import com.facebook.react.modules.core.ReactChoreographer;
-import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.UIManagerModuleListener;
-import com.facebook.react.uimanager.events.EventDispatcher;
-import com.reactnativenavigation.NavigationApplication;
 import com.facebook.react.bridge.Arguments;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -72,8 +54,7 @@ public class SyncRootView extends ReactRootView {
         knownPropNameMap.put("bgColor", "backgroundColor");
         knownPropNameMap.put("bordColor", "borderColor");
         knownPropNameMap.put("txtColor", "color");
-        knownPropNameMap.put("timezoneTextColor", "color");
-
+        
         final SyncRootView self = this;
         this.post(new Runnable() {
             // Post in the parent's message queue to make sure the parent
