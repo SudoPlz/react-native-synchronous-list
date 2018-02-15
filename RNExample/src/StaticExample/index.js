@@ -24,9 +24,11 @@ class StaticListExample extends React.Component {
       <SynchronousList
         ref={l => {
           this.synchronousList = l;
-          setTimeout(() => {
-            this.synchronousList.prepareRows();
-          }, 100)
+            setTimeout(() => {
+              if (this.synchronousList) {
+                this.synchronousList.prepareRows();
+              }
+            }, 100)
 
           // setInterval(async () => {
           //   const curViewIndex = await this.synchronousList.getCurrentViewIndex();
