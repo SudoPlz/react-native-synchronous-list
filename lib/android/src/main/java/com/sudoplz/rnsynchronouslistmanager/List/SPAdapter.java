@@ -2,6 +2,7 @@ package com.sudoplz.rnsynchronouslistmanager.List;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.bridge.ReactContext;
@@ -36,8 +37,10 @@ public class SPAdapter extends RecyclerView.Adapter <SPViewHolder> {
 //        );
 //        ;
 //        SPViewHolder holder = new SPViewHolder(new SPView());
-
+//        TextView text = new TextView(parent.getContext());
+//        return new SPViewHolder(text);
         return new SPViewHolder(new SPView());
+
     }
 
     public void setAdapterData(ArrayList initialData) {

@@ -22,6 +22,8 @@ public class SPViewHolder extends RecyclerView.ViewHolder {
 
     public void updateItemProps(ReadableMap newProps) {
         if (curView != null) {
+//            String name = newProps.getString("name");
+//            ((TextView) curView).setText(name);
             curView.updateProps(newProps);
         }
     }

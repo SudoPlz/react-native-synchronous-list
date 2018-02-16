@@ -46,7 +46,7 @@ public class SPRecyclerView extends RecyclerView {
     public void setData(ReadableArray newData) {
         if (getAdapter() != null) {
             SPAdapter adapter = (SPAdapter) getAdapter();
-//            adapter.setAdapterData(WritableAdvancedArray.shallowToArrayList(newData)); TODO Uncomment
+            adapter.setAdapterData(WritableAdvancedArray.shallowToArrayList(newData));
         }
     }
 

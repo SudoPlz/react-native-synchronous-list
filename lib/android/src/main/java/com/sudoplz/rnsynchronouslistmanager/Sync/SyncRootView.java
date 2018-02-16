@@ -1,6 +1,8 @@
 package com.sudoplz.rnsynchronouslistmanager.Sync;
 
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.view.ViewGroup;
 
 
 import com.facebook.react.bridge.AssertionException;
@@ -117,6 +119,7 @@ public class SyncRootView extends ReactRootView {
         recipeTagToTag = new HashMap <Integer, Integer>();
         recipeTagToTag.put(new Integer(1), new Integer(rootTag));
 
+
         for (int i = 0; i < recipeInstructions.size(); i++) { // for every instruction
             // instruction example {"args":[125,"RCTText",1,{"allowFontScaling":true,"ellipsizeMode":"tail","accessible":true}],"cmd":"createView"} }
             ReadableMap instruction = recipeInstructions.getMap(i);
@@ -180,10 +183,36 @@ public class SyncRootView extends ReactRootView {
         } // end of for loop
         if (hasInitialised == false) {
             hasInitialised = true;
+//            this.setLayoutParams(new LayoutParams(300, 500));
         }
     }
 
+//    @Override
+//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//        int widthSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST);
+//        int heightSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.AT_MOST);
+//
+//        super.onMeasure(widthSpec, heightSpec);
+//
+////        int measuredHeight = viewMeasurer.getMeasuredHeight(heightSpec);
+//        setMeasuredDimension(500, 300);
+//    }
+
     public void updateProps(ReadableMap newProps) {
+//        final SyncRootView self = this;
+//        if (isAttached  == false) {
+//            this.initialProps = newProps;
+////            ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+//            post(new Runnable() {
+//                // Post in the parent's message queue to make sure the parent
+//                // lays out its children before you call getHitRect()
+//                @Override
+//                public void run() {
+//                    self.runApplication();
+//                    isAttached = true;
+//                }
+//            });
+//        }
         if (recipeTagToTag == null) return;
 
         final int rootTag = getRootViewTag();
@@ -365,7 +394,7 @@ public class SyncRootView extends ReactRootView {
 
     public int getRecipeTag(int recipeTag, int rootTag) {
         // usually when the instruction is created (upon the app initialization) the root tag is 1
-        if (recipeTag == 1) {
+        if (recipeTag == 1000001) {
             // we want to replace that with the actual root tag
             return rootTag;
         }
