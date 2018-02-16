@@ -2,6 +2,7 @@ package com.sudoplz.rnsynchronouslistmanager;
 
 
 import com.sudoplz.rnsynchronouslistmanager.Sync.SyncRegistry;
+import com.sudoplz.rnsynchronouslistmanager.Utils.*;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
@@ -26,6 +27,8 @@ public class SynchronousListPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         if (listManager == null) {
             listManager = new SynchronousListManager(reactContext, rcHost);
+            // we've passed the host, no need to keep a reference of it any more
+            rcHost = null;
         }
         return Arrays.<NativeModule>asList(
                 new SyncRegistry(reactContext),

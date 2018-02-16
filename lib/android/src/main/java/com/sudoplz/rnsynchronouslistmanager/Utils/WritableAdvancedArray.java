@@ -3,6 +3,7 @@ package com.sudoplz.rnsynchronouslistmanager.Utils;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
@@ -148,6 +149,41 @@ public class WritableAdvancedArray extends WritableNativeArray {
             this.pushMap(this.convertMapToWritableMap((Map) value));
         }
         return this;
+    }
+
+
+    public static ArrayList<Object> shallowToArrayList(ReadableArray arr) {
+        if (arr == null || arr.size() <= 0) {
+            return new ArrayList<>();
+        }
+        ArrayList<Object> arrayList = new ArrayList<>();
+
+
+        for (int i = 0; i < arr.size(); i++) {
+            switch (arr.getType(i)) {
+                case Null:
+                    arrayList.add(null);
+                    break;
+                case Boolean:
+                    arrayList.add(arr.getBoolean(i));
+                    break;
+                case Number:
+                    arrayList.add(arr.getDouble(i));
+                    break;
+                case String:
+                    arrayList.add(arr.getString(i));
+                    break;
+                case Map:
+                    arrayList.add(arr.getMap(i));
+                    break;
+                case Array:
+                    arrayList.add(arr.getArray(i));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Could not convert object at index: " + i + ".");
+            }
+        }
+        return arrayList;
     }
 
 }

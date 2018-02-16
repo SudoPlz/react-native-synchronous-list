@@ -20,7 +20,7 @@ public class SyncRegistry extends ReactContextBaseJavaModule {
 
     public SyncRegistry(ReactApplicationContext reactContext) {
         super(reactContext);
-        recipeRegistry = new HashMap();
+        recipeRegistry = new HashMap<String, Recipe>();
         lastTag = 1000001;
     }
 

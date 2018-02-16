@@ -3,6 +3,8 @@ package com.sudoplz.rnsynchronouslistmanager.Sync;
 import android.os.Bundle;
 
 
+import com.facebook.react.bridge.AssertionException;
+import com.sudoplz.rnsynchronouslistmanager.Utils.SPGlobals;
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedArray;
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedMap;
 import com.facebook.react.ReactInstanceManager;
@@ -31,12 +33,23 @@ public class SyncRootView extends ReactRootView {
     private Map<String,String> knownPropNameMap;
     private @Nullable ReactInstanceManager mReactInstanceManager;
     private @Nullable String mJSModuleName;
-    private Boolean hasInitialised;
+    private Boolean hasInitialised = false;
+    private Boolean isAttached = false;
+    private ReadableMap initialProps;
 //    private @Nullable Bundle mAppProperties;
 
 
-    public SyncRootView(final String moduleName, ReactContext context, final ReactNativeHost rcHost) {
+    public SyncRootView(String moduleName) {
+        this(moduleName, SPGlobals.getInstance().getRcContext(), SPGlobals.getInstance().getRcHost(), null);
+    }
+
+    public SyncRootView(String moduleName, ReadableMap props) {
+        this(moduleName, SPGlobals.getInstance().getRcContext(), SPGlobals.getInstance().getRcHost(), props);
+    }
+
+    public SyncRootView(final String moduleName, ReactContext context, final ReactNativeHost rcHost, ReadableMap props) {
         super(context);
+        this.initialProps = props;
         this.setJSEntryPoint(new Runnable() {
             @Override
             public void run() {
@@ -69,23 +82,26 @@ public class SyncRootView extends ReactRootView {
 
     @Override
     protected void onAttachedToWindow() {
-        final int rootTag = super.getRootViewTag();
         final SyncRootView self = this;
-        this.post(new Runnable() {
-            // Post in the parent's message queue to make sure the parent
-            // lays out its children before you call getHitRect()
-            @Override
-            public void run() {
-                self.runApplication();
-            }
-        });
+        if (isAttached  == false) {
+//            ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+            post(new Runnable() {
+                // Post in the parent's message queue to make sure the parent
+                // lays out its children before you call getHitRect()
+                @Override
+                public void run() {
+                    self.runApplication();
+                    isAttached = true;
+                }
+            });
+        }
         super.onAttachedToWindow();
     }
 
 
 
     private void runApplication() {
-        ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+        final ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
         final UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
 
         final int rootTag = getRootViewTag();
@@ -114,13 +130,9 @@ public class SyncRootView extends ReactRootView {
             // the command (usually either createView or setChildren)
             String command = instruction != null ? instruction.getString("cmd") : "";
 
-
-
-            Bundle initialProps = this.getAppProperties();
-
             WritableAdvancedMap values;
-            if (initialProps != null) {
-                values = new WritableAdvancedMap(Arguments.fromBundle(initialProps));
+            if (this.initialProps != null) {
+                values = new WritableAdvancedMap(this.initialProps);
             } else {
                 values = new WritableAdvancedMap();
             }
@@ -128,31 +140,41 @@ public class SyncRootView extends ReactRootView {
             if (command.equals("createView")) {
                 // rewrite the props
                 final ReadableMap props = this.bindProps(new WritableAdvancedMap(args.getMap(3)), values, binding, inverseBinding, false);
-                reactContext.runOnNativeModulesQueueThread(new Runnable() {
+                runOnTheCorrectThread(new Runnable() {
                     @Override
                     public void run() {
                         // and create the child
-                        uiManager.createView(tag, args.getString(1), rootTag, props);
+
+                        try {
+                            uiManager.createView(tag, args.getString(1), rootTag, props);
+                        } catch (AssertionError e) {
+                            reactContext.runOnUiQueueThread(this);
+                        }
                     }
-                });
+                }, reactContext);
+
             } else if (command.equals("setChildren")) {
-                reactContext.runOnNativeModulesQueueThread(new Runnable() {
+                runOnTheCorrectThread(new Runnable() {
                     @Override
                     public void run() {
-                        uiManager.setChildren(tag, args.getArray(1));
+                        // set view relationships
+                        try {
+                            uiManager.setChildren(tag, args.getArray(1));
+                        } catch (AssertionError e) {
+                            reactContext.runOnUiQueueThread(this);
+                        }
                     }
-                });
-
+                }, reactContext);
             }
             // else if (command.equals("manageChildren")) {
             //     final int tag = this.getRecipeTag(args.getInt(0), rootTag);
 
-            //     reactContext.runOnNativeModulesQueueThread(new Runnable() {
+            //     runOnTheCorrectThread(new Runnable() {
             //         @Override'
             //         public void run() {
             //             uiManager.manageChildren((int) tag, args.getArray(1), args.getArray(2), args.getArray(3), args.getArray(4), args.getArray(5));
             //         }
-            //     });
+            //     }, reactContext);
             // }
 
         } // end of for loop
@@ -179,7 +201,7 @@ public class SyncRootView extends ReactRootView {
         WritableAdvancedArray recipe = new WritableAdvancedArray(details.getRecipeInstructions());
 //        NSArray *recipe = details[@"recipe"];
 
-        ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+        final ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
         final UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
 //        RCTUIManager<UIManagerInternals> *uiManager = (RCTUIManager<UIManagerInternals>*)self.bridge.uiManager;
 
@@ -196,24 +218,32 @@ public class SyncRootView extends ReactRootView {
 
                 if (props == null) continue;
 
-                reactContext.runOnNativeModulesQueueThread(new Runnable() {
+                runOnTheCorrectThread(new Runnable() {
                     @Override
                     public void run() {
-                        uiManager.setChildren(tag, args.getArray(1));
+                        // set view relationships
+                        try {
+                            uiManager.setChildren(tag, args.getArray(1));
+                        } catch (AssertionError e) {
+                            reactContext.runOnUiQueueThread(this);
+                        }
+
                     }
-                });
-
-
+                }, reactContext);
             }
 //
         }
 
-        reactContext.runOnNativeModulesQueueThread(new Runnable() {
+        runOnTheCorrectThread(new Runnable() {
             @Override
             public void run() {
-                uiManager.onBatchComplete();
+                try {
+                    uiManager.onBatchComplete();
+                } catch (AssertionError e) {
+                    reactContext.runOnUiQueueThread(this);
+                }
             }
-        });
+        }, reactContext);
     }
 
 
@@ -289,16 +319,24 @@ public class SyncRootView extends ReactRootView {
             return null;
         }
         if (valueIsAString) {
-            if (((String) value).toLowerCase().contains("__") != true) {
+            String strVal = (String) value;
+            if (strVal.toLowerCase().contains("__") != true) {
+                // if it's a string that doesn't contain __
                 return value;
             }
-            // if it's a string that doesn't contain __
-            // i.e propValue is @"__aPropName__"
-            if (((String) value).contains(".") == true) { // if valueKey contains fullstops
-                return content.getReadableMapDeepValue(key); // get the nested object
+
+            // on the other hand if it contains __ remove them
+            // i.e strVal is @"__aPropName__"
+            strVal = strVal.replaceAll("__","");
+            // should now be @"aPropName"
+
+
+
+            if (strVal.contains(".") == true) { // if valueKey contains fullstops
+                return content.getReadableMapDeepValue(strVal); // get the nested object
             }
             // otherwise it's a plain object (not nested)
-            return content.getReadableMapValue(key); // get the nested object
+            return content.getReadableMapValue(strVal); // get the nested object
         } else if (valueIsAString == false) {
             // if it's not a string
             return value;
@@ -317,6 +355,13 @@ public class SyncRootView extends ReactRootView {
 //        registry.setLastTag(result);
 //        return result;
 //    }
+    private void runOnTheCorrectThread(Runnable runnable, ReactContext reactContext) {
+        if (reactContext.isOnNativeModulesQueueThread()) {
+            reactContext.runOnNativeModulesQueueThread(runnable);
+        } else if (reactContext.isOnUiQueueThread()) {
+            reactContext.runOnUiQueueThread(runnable);
+        }
+    }
 
     public int getRecipeTag(int recipeTag, int rootTag) {
         // usually when the instruction is created (upon the app initialization) the root tag is 1
@@ -344,10 +389,11 @@ public class SyncRootView extends ReactRootView {
 //        super.onViewAdded(child);
 //    }
 
-//    @Override
-//    protected void onDetachedFromWindow() {
-//        super.onDetachedFromWindow();
-//    }
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        isAttached = false;
+    }
 
 //    @Override
 //    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

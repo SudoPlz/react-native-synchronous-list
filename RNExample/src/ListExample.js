@@ -6,10 +6,10 @@ import {
   Dimensions,
 } from 'react-native';
 import { SynchronousList, SyncRegistry } from 'react-native-synchronous-list';
-import DynamicRowTemplate from './DynamicRowTemplate';
+import RowTemplate from './RowTemplate';
 
+const TemplateName = 'MyTemplate';
 
-const RowTemplateName = 'MyDynamicRowTemplate';
 
 const complexDataObj = [{
   name: "Row 1",
@@ -53,7 +53,16 @@ const complexDataObj = [{
   height: 150,
 }];
 
-class DynamicListExample extends React.Component {
+// for (const i = 11; i < 1500; i++) {
+  
+//   complexDataObj.push({
+//     name: `Row ${i}`,
+//     width: 150,
+//     height: 150,
+//   })
+// }
+
+class ListExample extends React.Component {
   render() {
     return (
       <SynchronousList
@@ -62,13 +71,13 @@ class DynamicListExample extends React.Component {
             setTimeout(() => {
               this.synchronousList.prepareRows();
             }, 100)
-            setInterval(async () => {
-            const curViewIndex = await this.synchronousList.getCurrentViewIndex();
-            console.log(`Currently at :${curViewIndex}`);
-          }, 500);
+            // setInterval(async () => {
+            //   const curViewIndex = await this.synchronousList.getCurrentViewIndex();
+            //   console.log(`Currently at :${curViewIndex}`);
+            // }, 500);
           }}
           style={{ top: 0, width: Dimensions.get('window').width, height: Dimensions.get('window').height, backgroundColor: '#222222' }}
-          templateName={RowTemplateName}
+          templateName={TemplateName}
           rowWidth={Dimensions.get('window').width}
           dynamicViewSizes
           numRenderRows={10}
@@ -78,7 +87,7 @@ class DynamicListExample extends React.Component {
     );
   }
 }
-DynamicListExample.registerRecipe = () => {
-  SyncRegistry.registerComponent(RowTemplateName, () => DynamicRowTemplate, ['item.name','item.width','item.height', 'index']);
+ListExample.registerRecipe = () => {
+  SyncRegistry.registerComponent(TemplateName, () => RowTemplate, ['item.name','item.width','item.height', 'index']);
 }
-export default DynamicListExample;
+export default ListExample;

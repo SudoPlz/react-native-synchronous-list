@@ -80,11 +80,16 @@ public class WritableAdvancedMap extends WritableNativeMap {
                 int partIt = 0;
                 while (partIt < pathParts.length) {
                     String curKey = pathParts[partIt];
-                    if (mapToUse.getType(curKey) != ReadableType.Map) {
-                        mapToUse = mapToUse.getMap(curKey);
+                    try {
+                        ReadableType curType = mapToUse.getType(curKey);
+                        if (curType != ReadableType.Map) {
+                            mapToUse = mapToUse.getMap(curKey);
+                        }
+                        valueFound = this.getReadableMapValue(mapToUse, curKey);
+                        partIt++;
+                    } catch (Exception e) {
+                        return null;
                     }
-                    valueFound = this.getReadableMapValue(mapToUse, curKey);
-                    partIt++;
                 }
                 return valueFound;
             } else if (pathParts.length == 0) {
