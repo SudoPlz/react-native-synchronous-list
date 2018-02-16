@@ -11,7 +11,7 @@ public class SPGlobals {
     private static SPGlobals ourInstance;
     private ReactContext rcContext;
     private ReactNativeHost rcHost;
-    private String mainViewTemplateName;
+    private String mainViewTemplateName = "MyTemplate";
     private int numRenderRows;
     private String loopMode;
 

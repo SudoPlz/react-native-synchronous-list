@@ -6,17 +6,10 @@ import {
   Text,
 } from 'react-native';
 
+import { TemplateName } from './RowTemplate'; // must run before rendering anything else
 import ListExample from './ListExample';
 
 
-/*
-CAUTION:
-  We swizzle react.render so if you try to register a recipe while other components are rendering,
-  you will get errors (usually manage children errors)
-  ALWAYS register the recipe when react is NOT rendering other components
-  (Preferably at app launch)
-*/
-ListExample.registerRecipe();
 
 const styles = StyleSheet.create({
   container: {
@@ -31,7 +24,7 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <ListExample />
+        <ListExample templateName={TemplateName}/>
       </View>
     );
   }

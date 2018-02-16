@@ -5,10 +5,9 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import { SynchronousList, SyncRegistry } from 'react-native-synchronous-list';
-import RowTemplate from './RowTemplate';
+import { SynchronousList } from 'react-native-synchronous-list';
 
-const TemplateName = 'MyTemplate';
+
 
 
 const complexDataObj = [{
@@ -77,7 +76,7 @@ class ListExample extends React.Component {
             // }, 500);
           }}
           style={{ top: 0, width: Dimensions.get('window').width, height: Dimensions.get('window').height, backgroundColor: '#222222' }}
-          templateName={TemplateName}
+          templateName={this.props.templateName}
           rowWidth={Dimensions.get('window').width}
           dynamicViewSizes
           numRenderRows={10}
@@ -86,8 +85,5 @@ class ListExample extends React.Component {
         />
     );
   }
-}
-ListExample.registerRecipe = () => {
-  SyncRegistry.registerComponent(TemplateName, () => RowTemplate, ['item.name','item.width','item.height', 'index']);
 }
 export default ListExample;

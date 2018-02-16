@@ -7,7 +7,9 @@ android/android.iml
 android/gradlew
 android/gradlew.bat
 android/local.properties
+lib/android/build/
 
 ios/.DS_Store
 
 RNExample
+.RNExample/
