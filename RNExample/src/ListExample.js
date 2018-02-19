@@ -75,9 +75,9 @@ class ListExample extends React.Component {
             //   console.log(`Currently at :${curViewIndex}`);
             // }, 500);
           }}
-          style={{ top: 0, width: Dimensions.get('window').width, height: Dimensions.get('window').height, backgroundColor: '#222222' }}
+          style={{ top: 0, width: Dimensions.get('window').width, height: Dimensions.get('window').height, backgroundColor: '#F2F2F2' }}
           templateName={this.props.templateName}
-          rowWidth={Dimensions.get('window').width}
+          rowHeight={100}
           dynamicViewSizes
           numRenderRows={10}
           data={complexDataObj}

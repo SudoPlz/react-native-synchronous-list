@@ -8,11 +8,11 @@ import { SyncRegistry } from 'react-native-synchronous-list';
 const TemplateName = 'MyTemplate';
 
 const RowTemplate = (props) => (
-  <View style={{padding: 10, width: props['item.width'], height: props['item.height'], backgroundColor: '#AAA13377'}}>
+  <View style={{padding: 10, width: 300, height: 200, backgroundColor: '#AAA13377'}}>
     <TextInput
       style={{ backgroundColor: '#FFFFFF99', flexGrow: 1 }}
       editable={false}
-      value={props['item.name']}
+      value={"YO"}
     />
   </View>
 );
@@ -24,7 +24,8 @@ const RowTemplate = (props) => (
     ALWAYS register the recipe when react is NOT rendering other components
     (Preferably right when the app launches - and before you render other components!!)
 */
-SyncRegistry.registerComponent(TemplateName, () => RowTemplate, ['item.name','item.width','item.height', 'index']);
+// SyncRegistry.registerComponent(TemplateName, () => RowTemplate, ['name','width','height']);
+SyncRegistry.registerComponent(TemplateName, () => RowTemplate, []);
 
 RowTemplate.TemplateName = TemplateName;
 export default RowTemplate;
