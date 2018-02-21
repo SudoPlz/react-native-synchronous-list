@@ -149,10 +149,7 @@ public class SyncRootView extends ReactRootView {
             // get it's arguments
 //            final ReadableArray args = instruction.getArray("args");
 
-            // get the instruction main view tag
-            final int tag = this.getRecipeTag(instruction.getTag(), rootTag);
 
-            final int initialRootTag = this.getRecipeTag(instruction.getInitialRootTag(), rootTag);
 
             // the command (usually either createView or setChildren)
             String command = instruction.getInstructionType();
@@ -168,8 +165,10 @@ public class SyncRootView extends ReactRootView {
                 // rewrite the props
                 final ReadableMap props = this.bindProps(instruction.getProps(), newValues, binding, inverseBinding, false);
 
+                // get the instruction main view tag
+                final int tag = this.getRecipeTag(instruction.getTag(), rootTag);
 //                System.out.println("Is on UI thread: "+ctx.isOnUiQueueThread()+ " is on native module thread: "+ctx.isOnNativeModulesQueueThread());
-                dispatchInUIThread(new Runnable() {
+                dispatchInNativeModuleThread(new Runnable() {
                     @Override
                     public void run() {
                         final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
@@ -185,7 +184,9 @@ public class SyncRootView extends ReactRootView {
                 });
 
             } else if (command.equals("setChildren")) {
-                dispatchInUIThread(new Runnable() {
+                int initRootTag = instruction.getInitialRootTag();
+                final int initialRootTag = this.getRecipeTag(initRootTag, rootTag);
+                dispatchInNativeModuleThread(new Runnable() {
                     @Override
                     public void run() {
                         final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
@@ -204,7 +205,7 @@ public class SyncRootView extends ReactRootView {
             // else if (command.equals("manageChildren")) {
             //     final int tag = this.getRecipeTag(args.getInt(0), rootTag);
 
-            //     dispatchInUIThread(new Runnable() {
+            //     dispatchInNativeModuleThread(new Runnable() {
             //         @Override'
             //         public void run() {
             //             uiManager.manageChildren((int) tag, args.getArray(1), args.getArray(2), args.getArray(3), args.getArray(4), args.getArray(5));
@@ -281,7 +282,7 @@ public class SyncRootView extends ReactRootView {
 
                 if (props == null) continue;
 
-                dispatchInUIThread(new Runnable() {
+                dispatchInNativeModuleThread(new Runnable() {
                     @Override
                     public void run() {
                         final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
@@ -315,7 +316,7 @@ public class SyncRootView extends ReactRootView {
 //
         }
 
-        dispatchInUIThread(new Runnable() {
+        dispatchInNativeModuleThread(new Runnable() {
             @Override
             public void run() {
                 final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
@@ -493,13 +494,13 @@ public class SyncRootView extends ReactRootView {
     @Override
     public int getRootViewTag() {
         int rootTag;
-        if (hasInitialised == true) {
+//        if (hasInitialised == true) {
             rootTag = super.getRootViewTag();
-        } else {
-            rootTag = super.getRootViewTag();// - 10; // hack
+//        } else {
+//            rootTag = super.getRootViewTag() - 10; // hack
             // NO Idea why the root view tag generated is not the right one (we usually get 41 instead of 31)
             // but the previous one (-10) is the right one
-        }
+//        }
         return rootTag;
     }
 
@@ -508,7 +509,7 @@ public class SyncRootView extends ReactRootView {
     }
 
 
-    protected void dispatchInUIThread(Runnable runnable) {
+    protected void dispatchInNativeModuleThread(Runnable runnable) {
         if (runnable == null) {
             return;
         }

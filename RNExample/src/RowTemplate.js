@@ -17,11 +17,11 @@ const TemplateName = 'MyTemplate';
 //   </View>
 // );
 const RowTemplate = (props) => (
-  <View style={{padding: 10, width: 100, height: 50, backgroundColor: '#AAA13377'}}>
+  <View style={{ top: 20, padding: 10, width: props.width, height: props.height, backgroundColor: '#AAA13377'}}>
     <TextInput
       style={{ backgroundColor: '#FFFFFF99', flexGrow: 1 }}
       editable={false}
-      value={"NOT RIGHT"}
+      value="A child"
     />
   </View>
 );
