@@ -58,7 +58,7 @@ ScrollViewBindFactory* bindFactory;
     _initialPosition = 0;
     _horizontal = NO;
     _paging = NO;
-    _templateName = @"RNSynchronousListRowTemplate";
+    _templateName = @"MyTemplate";
 //    self.pagingEnabled = _paging;
     
 
@@ -367,6 +367,20 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+-(NSDictionary*) getDataForRowIndex:(int) rowIndex {
+    //            NSLog(@"Now requesting to bind row index %d", rowIndex);
+
+    NSMutableDictionary* newDt = [[bindFactory getValueForRow:rowIndex andDatasource:data] mutableCopy];
+    if (newDt) { // if we have data for that child
+        newDt[@"index"] = [NSNumber numberWithFloat:rowIndex];
+    } else { // if we DON't have data for that child
+        newDt = [_defaultChildData mutableCopy];
+        newDt[@"index"] = [NSNumber numberWithFloat:rowIndex];
+        //      NSLog(@"\nUpdating BLANK child %d props w/ %@\n", rowIndex, newDt);
+    }
+    return newDt;
+}
+
 #pragma mark - exposed methods
 
 
@@ -383,10 +397,10 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
                    {
                      id curRowValue;
                      if (data != nil && [data count] > i) {
-                       curRowValue = [data objectAtIndex:i];
+                         curRowValue = [self getDataForRowIndex:i];
                      }
                      
-                     RCCSyncRootView *rootView = [[RCCSyncRootView alloc] initWithBridge:_bridge moduleName:_templateName initialProperties:curRowValue ? @{ @"item" : curRowValue, @"index": [NSNumber numberWithInt:i] } : @{ @"index": [NSNumber numberWithInt:i]}];
+                     RCCSyncRootView *rootView = [[RCCSyncRootView alloc] initWithBridge:_bridge moduleName:_templateName initialProperties:curRowValue];
                      rootView.boundToIndex = i;
                      CGPoint center = rootView.center;
                      
@@ -465,7 +479,9 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
       int rowsAfterViewBindIndex = viewBindIndex - (int) data.count;
       if (rowsAfterViewBindIndex >= 0
           && rowsAfterViewBindIndex < newData.count) {
-        [view updateProps:@{ @"item": newData[rowsAfterViewBindIndex], @"index": [NSNumber numberWithInt:viewBindIndex]}];
+        NSMutableDictionary* newPropsForItem = [newData[rowsAfterViewBindIndex] mutableCopy];
+        newPropsForItem[@"index"] = [NSNumber numberWithInt:viewBindIndex];
+        [view updateProps:newPropsForItem];
       }
     }
   }
@@ -482,7 +498,9 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
       int viewBindIndex = view.boundToIndex;
       if (viewBindIndex < 0 && fabs(viewBindIndex) <= newData.count) {
 //        NSLog(@"Now translating data index: %d to newData index: %d", viewBindIndex, (int) newData.count + viewBindIndex);
-        [view updateProps:@{ @"item": newData[newData.count + viewBindIndex ], @"index": [NSNumber numberWithInt:viewBindIndex] }];
+          NSMutableDictionary* newPropsForItem = [newData[newData.count + viewBindIndex] mutableCopy];
+          newPropsForItem[@"index"] = [NSNumber numberWithInt:viewBindIndex];
+          [view updateProps:newPropsForItem];
       }
     }
     _firstRowIndex += newData.count;
@@ -510,7 +528,9 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
       int viewBindIndex = view.boundToIndex;
       if (viewBindIndex == rowIndex) {
 //        NSLog(@"Now replacing data at index: %d w/ newData %@", viewBindIndex, newData);
-        [view updateProps:@{ @"item": newData, @"index": [NSNumber numberWithInt:viewBindIndex] }];
+          NSMutableDictionary* newPropsForItem = [newData mutableCopy];
+          newPropsForItem[@"index"] = [NSNumber numberWithInt:viewBindIndex];
+          [view updateProps:newPropsForItem];
       }
     }
   }

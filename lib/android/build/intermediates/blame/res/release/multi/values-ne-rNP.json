@@ -1,0 +1,387 @@
+[
+    {
+        "outputFile": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/incremental/mergeReleaseResources/merged.dir/values-ne-rNP/values-ne-rNP.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 104,
+                    "endOffset": 155
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 291,
+                        "endColumn": 104,
+                        "endOffset": 391
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 160,
+                    "endColumn": 107,
+                    "endOffset": 263
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 5,
+                        "startColumn": 4,
+                        "startOffset": 396,
+                        "endColumn": 107,
+                        "endOffset": 499
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 268,
+                    "endColumn": 122,
+                    "endOffset": 386
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 504,
+                        "endColumn": 122,
+                        "endOffset": 622
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 5,
+                    "startColumn": 4,
+                    "startOffset": 391,
+                    "endColumn": 103,
+                    "endOffset": 490
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 7,
+                        "startColumn": 4,
+                        "startOffset": 627,
+                        "endColumn": 103,
+                        "endOffset": 726
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 6,
+                    "startColumn": 4,
+                    "startOffset": 495,
+                    "endColumn": 107,
+                    "endOffset": 598
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 8,
+                        "startColumn": 4,
+                        "startOffset": 731,
+                        "endColumn": 107,
+                        "endOffset": 834
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 7,
+                    "startColumn": 4,
+                    "startOffset": 603,
+                    "endColumn": 90,
+                    "endOffset": 689
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 9,
+                        "startColumn": 4,
+                        "startOffset": 839,
+                        "endColumn": 90,
+                        "endOffset": 925
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 8,
+                    "startColumn": 4,
+                    "startOffset": 694,
+                    "endColumn": 106,
+                    "endOffset": 796
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 10,
+                        "startColumn": 4,
+                        "startOffset": 930,
+                        "endColumn": 106,
+                        "endOffset": 1032
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 9,
+                    "startColumn": 4,
+                    "startOffset": 801,
+                    "endColumn": 126,
+                    "endOffset": 923
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 11,
+                        "startColumn": 4,
+                        "startOffset": 1037,
+                        "endColumn": 126,
+                        "endOffset": 1159
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 10,
+                    "startColumn": 4,
+                    "startOffset": 928,
+                    "endColumn": 93,
+                    "endOffset": 1017
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 12,
+                        "startColumn": 4,
+                        "startOffset": 1164,
+                        "endColumn": 93,
+                        "endOffset": 1253
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 11,
+                    "startColumn": 4,
+                    "startOffset": 1022,
+                    "endColumn": 89,
+                    "endOffset": 1107
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 13,
+                        "startColumn": 4,
+                        "startOffset": 1258,
+                        "endColumn": 89,
+                        "endOffset": 1343
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 12,
+                    "startColumn": 4,
+                    "startOffset": 1112,
+                    "endColumn": 87,
+                    "endOffset": 1195
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 14,
+                        "startColumn": 4,
+                        "startOffset": 1348,
+                        "endColumn": 87,
+                        "endOffset": 1431
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 13,
+                    "startColumn": 4,
+                    "startOffset": 1200,
+                    "endColumn": 109,
+                    "endOffset": 1305
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 15,
+                        "startColumn": 4,
+                        "startOffset": 1436,
+                        "endColumn": 109,
+                        "endOffset": 1541
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 14,
+                    "startColumn": 4,
+                    "startOffset": 1310,
+                    "endColumn": 115,
+                    "endOffset": 1421
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 16,
+                        "startColumn": 4,
+                        "startOffset": 1546,
+                        "endColumn": 115,
+                        "endOffset": 1657
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 15,
+                    "startColumn": 4,
+                    "startOffset": 1426,
+                    "endColumn": 102,
+                    "endOffset": 1524
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 17,
+                        "startColumn": 4,
+                        "startOffset": 1662,
+                        "endColumn": 102,
+                        "endOffset": 1760
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 16,
+                    "startColumn": 4,
+                    "startOffset": 1529,
+                    "endColumn": 114,
+                    "endOffset": 1639
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 18,
+                        "startColumn": 4,
+                        "startOffset": 1765,
+                        "endColumn": 114,
+                        "endOffset": 1875
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 17,
+                    "startColumn": 4,
+                    "startOffset": 1644,
+                    "endColumn": 101,
+                    "endOffset": 1741
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 19,
+                        "startColumn": 4,
+                        "startOffset": 1880,
+                        "endColumn": 101,
+                        "endOffset": 1977
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 18,
+                    "startColumn": 4,
+                    "startOffset": 1746,
+                    "endColumn": 114,
+                    "endOffset": 1856
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 20,
+                        "startColumn": 4,
+                        "startOffset": 1982,
+                        "endColumn": 114,
+                        "endOffset": 2092
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 19,
+                    "startColumn": 4,
+                    "startOffset": 1861,
+                    "endColumn": 130,
+                    "endOffset": 1987
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 21,
+                        "startColumn": 4,
+                        "startOffset": 2097,
+                        "endColumn": 130,
+                        "endOffset": 2223
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 20,
+                    "startColumn": 4,
+                    "startOffset": 1992,
+                    "endColumn": 111,
+                    "endOffset": 2099
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 22,
+                        "startColumn": 4,
+                        "startOffset": 2228,
+                        "endColumn": 111,
+                        "endOffset": 2335
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 21,
+                    "startColumn": 4,
+                    "startOffset": 2104,
+                    "endColumn": 100,
+                    "endOffset": 2200
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-ne-rNP/values-ne-rNP.xml",
+                    "position": {
+                        "startLine": 23,
+                        "startColumn": 4,
+                        "startOffset": 2340,
+                        "endColumn": 100,
+                        "endOffset": 2436
+                    }
+                }
+            }
+        ]
+    }
+]

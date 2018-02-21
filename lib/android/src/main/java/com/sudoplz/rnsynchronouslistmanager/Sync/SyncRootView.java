@@ -6,6 +6,10 @@ import android.view.ViewGroup;
 
 
 import com.facebook.react.bridge.AssertionException;
+import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.modules.appregistry.AppRegistry;
+import com.facebook.systrace.Systrace;
 import com.sudoplz.rnsynchronouslistmanager.Utils.SPGlobals;
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedArray;
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedMap;
@@ -20,10 +24,13 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.bridge.Arguments;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
  * Created by SudoPlz on 02/11/2017.
@@ -31,13 +38,14 @@ import javax.annotation.Nullable;
 
 public class SyncRootView extends ReactRootView {
 
-    private Map<Integer,Integer> recipeTagToTag;
-    private Map<String,String> knownPropNameMap;
-    private @Nullable ReactInstanceManager mReactInstanceManager;
-    private @Nullable String mJSModuleName;
-    private Boolean hasInitialised = false;
-    private Boolean isAttached = false;
-    private ReadableMap initialProps;
+    protected Map<Integer,Integer> recipeTagToTag;
+    protected Map<String,String> knownPropNameMap;
+    protected @Nullable ReactInstanceManager mReactInstanceManager;
+    protected ReactContext ctx;
+    protected @Nullable String mJSModuleName;
+    protected Boolean hasInitialised = false;
+    protected Boolean isAttached = false;
+    protected WritableAdvancedMap initialProps;
 //    private @Nullable Bundle mAppProperties;
 
 
@@ -49,18 +57,31 @@ public class SyncRootView extends ReactRootView {
         this(moduleName, SPGlobals.getInstance().getRcContext(), SPGlobals.getInstance().getRcHost(), props);
     }
 
+    public SyncRootView(String moduleName, ReactContext context, ReadableMap props) {
+        this(moduleName, context, SPGlobals.getInstance().getRcHost(), props);
+    }
+
     public SyncRootView(final String moduleName, ReactContext context, final ReactNativeHost rcHost, ReadableMap props) {
         super(context);
-        this.initialProps = props;
+
+        if (props != null) {
+            this.initialProps = new WritableAdvancedMap(props);
+        }
+        final SyncRootView self = this;
         this.setJSEntryPoint(new Runnable() {
             @Override
             public void run() {
+                AssertionError re;
+//                if (isAttached  == false) {
+//                    self.runApplication();
+//                }
                 System.out.println("Module "+mJSModuleName+".runApplication would normally run now");
             }
         });
         hasInitialised = false;
-        mReactInstanceManager = rcHost.getReactInstanceManager();
         mJSModuleName = moduleName;
+        ctx = context;
+        mReactInstanceManager = rcHost.getReactInstanceManager();
 
         // prepare the known properties name association map
         // we want to rename the properties that have to do with colors,
@@ -70,15 +91,19 @@ public class SyncRootView extends ReactRootView {
         knownPropNameMap.put("bordColor", "borderColor");
         knownPropNameMap.put("txtColor", "color");
 
-        final SyncRootView self = this;
-        this.post(new Runnable() {
-            // Post in the parent's message queue to make sure the parent
-            // lays out its children before you call getHitRect()
-            @Override
-            public void run() {
-                self.startReactApplication(mReactInstanceManager, mJSModuleName);
-            }
-        });
+
+        Thread cur = Thread.currentThread();
+        startReactApplication(mReactInstanceManager, mJSModuleName);
+        this.runApplication(); // we want this ton run on the UI Thread
+
+//        this.post(new Runnable() {
+//            // Post in the parent's message queue to make sure the parent
+//            // lays out its children before you call getHitRect()
+//            @Override
+//            public void run() {
+//                self.startReactApplication(mReactInstanceManager, mJSModuleName);
+//            }
+//        });
     }
 
 
@@ -86,14 +111,12 @@ public class SyncRootView extends ReactRootView {
     protected void onAttachedToWindow() {
         final SyncRootView self = this;
         if (isAttached  == false) {
-//            ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-            post(new Runnable() {
+            this.post(new Runnable() {
                 // Post in the parent's message queue to make sure the parent
                 // lays out its children before you call getHitRect()
                 @Override
                 public void run() {
-                    self.runApplication();
-                    isAttached = true;
+                    self.runApplication(); // we want this ton run on the UI Thread
                 }
             });
         }
@@ -102,82 +125,91 @@ public class SyncRootView extends ReactRootView {
 
 
 
-    private void runApplication() {
-        final ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-        final UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    public void runApplication() {
+
 
         final int rootTag = getRootViewTag();
 
         SyncRegistry syncModule = registryModule();
 
-        Recipe details = syncModule.getRegistry().get(mJSModuleName);
+        Recipe curRecipe = syncModule.getRegistry().get(mJSModuleName);
 
-        WritableAdvancedMap binding = new WritableAdvancedMap(details.getRecipeProps());
-        ReadableMap inverseBinding = binding.getInverted();
-        ReadableArray recipeInstructions = details.getRecipeInstructions();
+        WritableAdvancedMap binding = curRecipe.getRecipeBindings();
+        ReadableMap inverseBinding = curRecipe.getRecipeInverseBindings();
+        ArrayList<Instruction> recipeInstructions = curRecipe.getRecipeInstructions();
 
         recipeTagToTag = new HashMap <Integer, Integer>();
         recipeTagToTag.put(new Integer(1), new Integer(rootTag));
-
+//        recipeTagToTag.put(new Integer(1000001), new Integer(rootTag));
 
         for (int i = 0; i < recipeInstructions.size(); i++) { // for every instruction
             // instruction example {"args":[125,"RCTText",1,{"allowFontScaling":true,"ellipsizeMode":"tail","accessible":true}],"cmd":"createView"} }
-            ReadableMap instruction = recipeInstructions.getMap(i);
+            final Instruction instruction = recipeInstructions.get(i);
 
             // get it's arguments
-            final ReadableArray args = instruction.getArray("args");
+//            final ReadableArray args = instruction.getArray("args");
 
             // get the instruction main view tag
-            final int tag = this.getRecipeTag(args.getInt(0), rootTag);
+            final int tag = this.getRecipeTag(instruction.getTag(), rootTag);
+
+            final int initialRootTag = this.getRecipeTag(instruction.getInitialRootTag(), rootTag);
 
             // the command (usually either createView or setChildren)
-            String command = instruction != null ? instruction.getString("cmd") : "";
+            String command = instruction.getInstructionType();
 
-            WritableAdvancedMap values;
+            WritableAdvancedMap newValues;
             if (this.initialProps != null) {
-                values = new WritableAdvancedMap(this.initialProps);
+                newValues = new WritableAdvancedMap(this.initialProps);
             } else {
-                values = new WritableAdvancedMap();
+                newValues = new WritableAdvancedMap();
             }
 
             if (command.equals("createView")) {
                 // rewrite the props
-                final ReadableMap props = this.bindProps(new WritableAdvancedMap(args.getMap(3)), values, binding, inverseBinding, false);
-                runOnTheCorrectThread(new Runnable() {
+                final ReadableMap props = this.bindProps(instruction.getProps(), newValues, binding, inverseBinding, false);
+
+//                System.out.println("Is on UI thread: "+ctx.isOnUiQueueThread()+ " is on native module thread: "+ctx.isOnNativeModulesQueueThread());
+                dispatchInUIThread(new Runnable() {
                     @Override
                     public void run() {
+                        final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
                         // and create the child
-
-                        try {
-                            uiManager.createView(tag, args.getString(1), rootTag, props);
-                        } catch (AssertionError e) {
-                            reactContext.runOnUiQueueThread(this);
-                        }
+                        uiManager.createView(tag, instruction.getModuleName(), rootTag, props);
+//                        try {
+//                            uiManager.createView(tag, instruction.getModuleName(), rootTag, props);
+//                        } catch (Error e) {
+//                            System.out.println("runApplication.createView error: "+e);
+//                            ctx.runOnUiQueueThread(this);
+//                        }
                     }
-                }, reactContext);
+                });
 
             } else if (command.equals("setChildren")) {
-                runOnTheCorrectThread(new Runnable() {
+                dispatchInUIThread(new Runnable() {
                     @Override
                     public void run() {
+                        final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
+
                         // set view relationships
-                        try {
-                            uiManager.setChildren(tag, args.getArray(1));
-                        } catch (AssertionError e) {
-                            reactContext.runOnUiQueueThread(this);
-                        }
+                        uiManager.setChildren(initialRootTag, instruction.getHierarchy());
+//                        try {
+//                            uiManager.setChildren(initialRootTag, instruction.getHierarchy());
+//                        } catch (Error e) {
+//                            System.out.println("runApplication.setChildren error: "+e);
+//                            ctx.runOnUiQueueThread(this);
+//                        }
                     }
-                }, reactContext);
+                });
             }
             // else if (command.equals("manageChildren")) {
             //     final int tag = this.getRecipeTag(args.getInt(0), rootTag);
 
-            //     runOnTheCorrectThread(new Runnable() {
+            //     dispatchInUIThread(new Runnable() {
             //         @Override'
             //         public void run() {
             //             uiManager.manageChildren((int) tag, args.getArray(1), args.getArray(2), args.getArray(3), args.getArray(4), args.getArray(5));
             //         }
-            //     }, reactContext);
+            //     });
             // }
 
         } // end of for loop
@@ -185,6 +217,7 @@ public class SyncRootView extends ReactRootView {
             hasInitialised = true;
 //            this.setLayoutParams(new LayoutParams(300, 500));
         }
+        isAttached = true;
     }
 
 //    @Override
@@ -202,7 +235,7 @@ public class SyncRootView extends ReactRootView {
 //        final SyncRootView self = this;
 //        if (isAttached  == false) {
 //            this.initialProps = newProps;
-////            ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+////            ctx ctx = mReactInstanceManager.getCurrentReactContext();
 //            post(new Runnable() {
 //                // Post in the parent's message queue to make sure the parent
 //                // lays out its children before you call getHitRect()
@@ -217,62 +250,85 @@ public class SyncRootView extends ReactRootView {
 
         final int rootTag = getRootViewTag();
 
-        SyncRegistry module = registryModule();
-        Recipe details = module.getRegistry().get(mJSModuleName);
-//        NSDictionary *details = [module.registry objectForKey:self.moduleName];
+        SyncRegistry syncModule = registryModule();
+        Recipe curRecipe = syncModule.getRegistry().get(mJSModuleName);
 
-        WritableAdvancedMap binding = new WritableAdvancedMap(details.getRecipeProps());
-//        NSDictionary *binding = details[@"props"];
+        WritableAdvancedMap binding = curRecipe.getRecipeBindings();
+        ReadableMap inverseBinding = curRecipe.getRecipeInverseBindings();
+        ArrayList<Instruction> recipeInstructions = curRecipe.getRecipeInstructions();
 
-        ReadableMap inverseBinding = binding.getInverted();
-//        NSDictionary *inverseBinding = [self invertMap:binding];
 
-        WritableAdvancedArray recipe = new WritableAdvancedArray(details.getRecipeInstructions());
-//        NSArray *recipe = details[@"recipe"];
-
-        final ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-        final UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+//        final ctx ctx = mReactInstanceManager.getCurrentReactContext();
+//        final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
 //        RCTUIManager<UIManagerInternals> *uiManager = (RCTUIManager<UIManagerInternals>*)self.bridge.uiManager;
 
         WritableAdvancedMap newValues = new WritableAdvancedMap(newProps);
 
-        for (int x = 0; x < recipe.size(); x++) {
+        for (int x = 0; x < recipeInstructions.size(); x++) {
             // for (NSDictionary *call in recipe)
-            ReadableMap instruction = (ReadableMap) recipe.getReadableArrValue(x);
-            String command = instruction != null ? instruction.getString("cmd") : "";
+            final Instruction instruction = recipeInstructions.get(x);
+
+            // get the instruction main view tag
+            final int tag = this.getRecipeTag(instruction.getTag(), rootTag);
+
+            final int initialRootTag = this.getRecipeTag(instruction.getInitialRootTag(), rootTag);
+
+            // the command (usually either createView or setChildren)
+            String command = instruction.getInstructionType();
+
             if (command.equals("createView") ) {
-                final ReadableArray args = instruction.getArray("args");
-                final int tag = this.getRecipeTag(args.getInt(0), rootTag);
-                final ReadableMap props = this.bindProps(new WritableAdvancedMap(args.getMap(3)), newValues, binding, inverseBinding, true);
+                final ReadableMap props = this.bindProps(instruction.getProps(), newValues, binding, inverseBinding, true);
 
                 if (props == null) continue;
 
-                runOnTheCorrectThread(new Runnable() {
+                dispatchInUIThread(new Runnable() {
                     @Override
                     public void run() {
+                        final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
+
                         // set view relationships
-                        try {
-                            uiManager.setChildren(tag, args.getArray(1));
-                        } catch (AssertionError e) {
-                            reactContext.runOnUiQueueThread(this);
-                        }
+                        uiManager.updateView(tag, instruction.getModuleName(), props);
+//                        try {
+//                            uiManager.updateView(tag, instruction.getModuleName(), props);
+//                        } catch (Error e) {
+//                            System.out.println("updateProps.updateView error: "+e);
+//                            ctx.runOnUiQueueThread(this);
+//                        }
 
                     }
-                }, reactContext);
+                });
+                /**
+                 * TODO See if we can use synchronouslyUpdateViewOnUIThread above instead of always using updateView
+                 if ([prop isEqualToString:@"children"])
+                 {
+                     dispatch_async(RCTGetUIManagerQueue(), ^{
+                         [_uiManager updateView:reactTag viewName:@"RCTRawText" props:@{@"text": rowValue}];
+                         [_uiManager batchDidComplete];
+                     });
+                 } else {
+                    [_uiManager synchronouslyUpdateViewOnUIThread:reactTag viewName:viewName props:@{prop: rowValue}];
+                 }
+
+                 As seen in https://hackernoon.com/react-native-listview-performance-revisited-recycling-without-the-bridge-c4f62d18c7dd
+                 */
             }
 //
         }
 
-        runOnTheCorrectThread(new Runnable() {
+        dispatchInUIThread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    uiManager.onBatchComplete();
-                } catch (AssertionError e) {
-                    reactContext.runOnUiQueueThread(this);
-                }
+                final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
+
+                uiManager.onBatchComplete();
+//                try {
+//                    uiManager.onBatchComplete();
+//                } catch (Error e) {
+//                    System.out.println("updateProps.onBatchComplete error: "+e);
+//                    ctx.runOnUiQueueThread(this);
+//                }
             }
-        }, reactContext);
+        });
     }
 
 
@@ -301,39 +357,44 @@ public class SyncRootView extends ReactRootView {
             // figure wether we should replace the key or not (we do that for color keys otherwise rn messes them up)
             boolean propNameShouldBeReplaced = propIsAString == true &&  propValue != null && knownPropNameMap.containsKey((String) propValue);
 
-            if (onlyChanges != true && propNameShouldBeReplaced == false) {
-                Object realValue = this.getValueForProp(propName, propValue, propIsAString, values);
-                if (realValue != null) {
-                    // i.e propValue is @"__aPropName__"
+            if (onlyChanges != true) {
+                if (propNameShouldBeReplaced == false) {
+                    Object realValue = this.getValueForProp(propValue, propIsAString, values);
+                    if (realValue != null) {
+                        // i.e propValue is @"__aPropName__"
+                        resultMap.putAnyType(propName, realValue);
+                        mapSizeApproximation++;
+                    }
+                } else {
                     resultMap.putAnyType(propName, propValue);
                     mapSizeApproximation++;
                 }
             }
 
-            if (propValue != null && propIsAString == true) {
+            if (propValue != null) {
+                if (propIsAString == true) {
+                    String valueKey = null;
+                    if (inverseBinding.hasKey((String) propValue)) {
+                        valueKey = inverseBinding.getString((String) propValue);
+                        if (valueKey != null)
+                        {
+                            String realPropKey = null;
 
-                String valueKey = null;
-                if (inverseBinding.hasKey((String) propValue)) {
-                    valueKey = inverseBinding.getString((String) propValue);
-                }
+                            if (propNameShouldBeReplaced == true) {
+                                realPropKey = knownPropNameMap.get((String) propValue);
+                            }
 
-                if (valueKey != null)
-                {
-                    String realPropKey = null;
+                            if (realPropKey == null) {
+                                realPropKey = propName;
+                            }
 
-                    if (propNameShouldBeReplaced == true) {
-                        realPropKey = knownPropNameMap.get((String) propValue);
-                    }
-
-                    if (realPropKey == null) {
-                        realPropKey = propName;
-                    }
-
-                    Object realValue = this.getValueForProp(realPropKey, propValue, propIsAString, values);
-                    if (realValue != null) {
-                        // i.e propValue is @"__aPropName__"
-                        resultMap.putAnyType(propName, propValue);
-                        mapSizeApproximation++;
+                            Object realValue = this.getValueForProp(propValue, propIsAString, values);
+                            if (realValue != null) {
+                                // i.e propValue is @"__aPropName__"
+                                resultMap.putAnyType(realPropKey, realValue);
+                                mapSizeApproximation++;
+                            }
+                        }
                     }
                 }
             }
@@ -343,8 +404,8 @@ public class SyncRootView extends ReactRootView {
         return resultMap;
     }
 
-    protected Object getValueForProp(String key,Object value, Boolean valueIsAString, WritableAdvancedMap content) {
-        if (key == null || value == null || content == null) {
+    protected Object getValueForProp(Object value, Boolean valueIsAString, WritableAdvancedMap content) {
+        if (value == null || content == null) {
             return null;
         }
         if (valueIsAString) {
@@ -384,17 +445,19 @@ public class SyncRootView extends ReactRootView {
 //        registry.setLastTag(result);
 //        return result;
 //    }
-    private void runOnTheCorrectThread(Runnable runnable, ReactContext reactContext) {
-        if (reactContext.isOnNativeModulesQueueThread()) {
-            reactContext.runOnNativeModulesQueueThread(runnable);
-        } else if (reactContext.isOnUiQueueThread()) {
-            reactContext.runOnUiQueueThread(runnable);
-        }
-    }
+
+
+//    private void runOnNativeModuleThread(Runnable runnable, ReactContext reactContext) {
+//        if (ctx.isOnNativeModulesQueueThread()) {
+//            runnable.run();
+//        } else {
+//            ctx.runOnNativeModulesQueueThread(runnable);
+//        }
+//    }
 
     public int getRecipeTag(int recipeTag, int rootTag) {
         // usually when the instruction is created (upon the app initialization) the root tag is 1
-        if (recipeTag == 1000001) {
+        if (recipeTag == 1000001 || recipeTag == 1) {
             // we want to replace that with the actual root tag
             return rootTag;
         }
@@ -421,13 +484,11 @@ public class SyncRootView extends ReactRootView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        ViewGroup parent = (ViewGroup) this.getParent();
+        parent.removeView(this);
         isAttached = false;
     }
 
-//    @Override
-//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//    }
 
     @Override
     public int getRootViewTag() {
@@ -435,23 +496,29 @@ public class SyncRootView extends ReactRootView {
         if (hasInitialised == true) {
             rootTag = super.getRootViewTag();
         } else {
-            rootTag = super.getRootViewTag() - 10; // hack
+            rootTag = super.getRootViewTag();// - 10; // hack
             // NO Idea why the root view tag generated is not the right one (we usually get 41 instead of 31)
             // but the previous one (-10) is the right one
         }
         return rootTag;
     }
 
-    private SyncRegistry registryModule() {
-        return mReactInstanceManager
-                .getCurrentReactContext()
-                .getNativeModule(SyncRegistry.class);
+    protected SyncRegistry registryModule() {
+        return ctx.getNativeModule(SyncRegistry.class);
     }
 
 
+    protected void dispatchInUIThread(Runnable runnable) {
+        if (runnable == null) {
+            return;
+        }
+//        final UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+        ctx.runOnNativeModulesQueueThread(runnable);
+    }
 
-
-
+    public void setInitialProps(ReadableMap initProps) {
+        this.initialProps = new WritableAdvancedMap(initProps);
+    }
 
 
 

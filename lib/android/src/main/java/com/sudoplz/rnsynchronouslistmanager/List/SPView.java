@@ -12,8 +12,12 @@ import com.sudoplz.rnsynchronouslistmanager.Utils.SPGlobals;
 
 public class SPView extends SyncRootView {
 
-    public SPView(ReadableMap initialProps) {
+    public SPView(ReactContext context, ReadableMap initialProps) {
         super(SPGlobals.getInstance().getMainViewTemplateName(), initialProps);
+    }
+
+    public SPView(ReactContext context) {
+        super(SPGlobals.getInstance().getMainViewTemplateName(), context, null);
     }
 
     public SPView() {

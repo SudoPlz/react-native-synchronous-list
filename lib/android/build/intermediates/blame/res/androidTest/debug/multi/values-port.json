@@ -1,0 +1,26 @@
+[
+    {
+        "outputFile": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values-port/values-port.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 55,
+                    "endOffset": 106
+                },
+                "from": {
+                    "file": "/Users/idynopia/tmp/react-native-synchronous-list/RNExample/node_modules/react-native-synchronous-list/lib/android/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values-port/values-port.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 287,
+                        "endColumn": 55,
+                        "endOffset": 338
+                    }
+                }
+            }
+        ]
+    }
+]

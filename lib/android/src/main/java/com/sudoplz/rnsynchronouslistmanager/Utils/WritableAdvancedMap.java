@@ -188,8 +188,8 @@ public class WritableAdvancedMap extends WritableNativeMap {
      * Works w/ ReadableMaps that contain String keys and values only
      * @return {ReadableMap}
      */
-    public ReadableMap getInverted() {
-        WritableNativeMap invertedMap = new WritableNativeMap();
+    public WritableAdvancedMap getInverted() {
+        WritableAdvancedMap invertedMap = new WritableAdvancedMap();
         ReadableMapKeySetIterator rMapIter = this.keySetIterator();
 
         while (rMapIter.hasNextKey()) {

@@ -39,7 +39,18 @@ public class SPAdapter extends RecyclerView.Adapter <SPViewHolder> {
 //        SPViewHolder holder = new SPViewHolder(new SPView());
 //        TextView text = new TextView(parent.getContext());
 //        return new SPViewHolder(text);
-        return new SPViewHolder(new SPView());
+        SPView child = new SPView();
+        SPViewHolder holder = new SPViewHolder(child);
+//        int position = holder.getAdapterPosition();
+//        if (position != RecyclerView.NO_POSITION) {
+//            ReadableMap dataForChild = (ReadableMap) data.get(position);
+//            child.setInitialProps(dataForChild);
+//            child.runApplication();
+//        }
+        ReadableMap dataForChild = (ReadableMap) data.get(0);
+        child.setInitialProps(dataForChild);
+//        child.runApplication();
+        return holder;
 
     }
 

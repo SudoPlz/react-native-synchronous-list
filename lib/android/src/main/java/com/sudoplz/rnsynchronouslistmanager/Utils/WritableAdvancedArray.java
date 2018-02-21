@@ -4,6 +4,8 @@ package com.sudoplz.rnsynchronouslistmanager.Utils;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeArray;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
@@ -89,6 +91,10 @@ public class WritableAdvancedArray extends WritableNativeArray {
                 rArray.pushArray(this.convertListToWritableArray((ArrayList) value));
             } else if (type == Map.class) {
                 rArray.pushMap(this.convertMapToWritableMap((Map) value));
+            } else if (type == ReadableNativeMap.class) {
+                rArray.pushMap(new WritableAdvancedMap((ReadableNativeMap) value));
+            } else if (type == ReadableNativeArray.class) {
+                rArray.pushArray(new WritableAdvancedArray((ReadableNativeArray) value));
             }
         }
         return rArray;
@@ -122,6 +128,10 @@ public class WritableAdvancedArray extends WritableNativeArray {
                 rArray.putArray(key, this.convertListToWritableArray((ArrayList) value));
             } else if (type == Map.class) {
                 rArray.putMap(key, this.convertMapToWritableMap((Map) value));
+            } else if (type == ReadableNativeMap.class) {
+                rArray.putMap(key, new WritableAdvancedMap((ReadableNativeMap) value));
+            } else if (type == ReadableNativeArray.class) {
+                rArray.putArray(key, new WritableAdvancedArray((ReadableNativeArray) value));
             }
             it.remove(); // avoids a ConcurrentModificationException
         }
@@ -147,6 +157,10 @@ public class WritableAdvancedArray extends WritableNativeArray {
             this.pushArray(this.convertListToWritableArray((ArrayList) value));
         } else if (type == Map.class) {
             this.pushMap(this.convertMapToWritableMap((Map) value));
+        } else if (type == ReadableNativeMap.class) {
+            this.pushMap(new WritableAdvancedMap((ReadableNativeMap) value));
+        } else if (type == ReadableNativeArray.class) {
+            this.pushArray(new WritableAdvancedArray((ReadableNativeArray) value));
         }
         return this;
     }

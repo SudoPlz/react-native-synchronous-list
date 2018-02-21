@@ -12,31 +12,31 @@ import { SynchronousList } from 'react-native-synchronous-list';
 
 const complexDataObj = [{
   name: "Row 1",
-  width: 850,
+  width: 150,
   height: 150,
 },{
   name: "Row 2",
-  width: 150,
-  height: 30,
+  width: 250,
+  height: 70,
 },{
   name: "Row 3",
-  width: 500,
+  width: 300,
   height: 150,
 },{
   name: "Row 4",
-  width: 750,
+  width: 450,
   height: 150,
 },{
   name: "Row 5",
-  width: 150,
+  width: 550,
   height: 150,
 },{
   name: "Row 6",
-  width: 150,
+  width: 450,
   height: 150,
 },{
   name: "Row 7",
-  width: 150,
+  width: 350,
   height: 150,
 },{
   name: "Row 8",
@@ -52,8 +52,7 @@ const complexDataObj = [{
   height: 150,
 }];
 
-// for (const i = 11; i < 1500; i++) {
-  
+// for (const i = 11; i < 1500; i++) { 
 //   complexDataObj.push({
 //     name: `Row ${i}`,
 //     width: 150,
