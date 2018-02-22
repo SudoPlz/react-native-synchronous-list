@@ -494,13 +494,13 @@ public class SyncRootView extends ReactRootView {
     @Override
     public int getRootViewTag() {
         int rootTag;
-//        if (hasInitialised == true) {
+        if (hasInitialised == true) {
             rootTag = super.getRootViewTag();
-//        } else {
-//            rootTag = super.getRootViewTag() - 10; // hack
-            // NO Idea why the root view tag generated is not the right one (we usually get 41 instead of 31)
-            // but the previous one (-10) is the right one
-//        }
+        } else {
+            rootTag = super.getRootViewTag() - 10; // hack
+//             NO Idea why the root view tag generated is not the right one (we usually get 41 instead of 31)
+//             but the previous one (-10) is the right one
+        }
         return rootTag;
     }
 

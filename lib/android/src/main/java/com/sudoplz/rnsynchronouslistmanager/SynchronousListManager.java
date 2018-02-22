@@ -1,6 +1,7 @@
 package com.sudoplz.rnsynchronouslistmanager;
 
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -11,12 +12,14 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.sudoplz.rnsynchronouslistmanager.List.SPView;
 import com.sudoplz.rnsynchronouslistmanager.Utils.SPGlobals;
+import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedArray;
+import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedMap;
 
 /**
  * Created by SudoPlz on 05/02/2018.
  */
 
-public class SynchronousListManager extends ViewGroupManager <SPView> {
+public class SynchronousListManager extends ViewGroupManager <SPRecyclerView> {
     private SPRecyclerView listView;
     private SPGlobals globals;
 
@@ -33,12 +36,25 @@ public class SynchronousListManager extends ViewGroupManager <SPView> {
 
 
     @Override
-    public SPView createViewInstance(ThemedReactContext context) {
-        return new SPView(context);
-//        if (listView == null) {
-//            listView = new SPRecyclerView(context);
-//        }
-//        return listView;
+    public SPRecyclerView createViewInstance(ThemedReactContext context) {
+        WritableAdvancedMap map = new WritableAdvancedMap();
+        map.putString("name", "Test 1");
+        map.putInt("width", 100);
+        map.putInt("height", 300);
+
+        WritableAdvancedMap map2 = new WritableAdvancedMap();
+        map.putString("name", "Test 2");
+        map.putInt("width", 150);
+        map.putInt("height", 200);
+
+        WritableAdvancedArray initialData = new WritableAdvancedArray();
+        initialData.pushMap(map);
+        initialData.pushMap(map2);
+//        return new SPView(context, map);
+        if (listView == null) {
+            listView = new SPRecyclerView(context, initialData);
+        }
+        return listView;
     }
 
     public SPRecyclerView getListView() {

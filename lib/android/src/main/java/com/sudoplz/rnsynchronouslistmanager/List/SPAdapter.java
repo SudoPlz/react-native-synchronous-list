@@ -23,9 +23,16 @@ public class SPAdapter extends RecyclerView.Adapter <SPViewHolder> {
 
     ArrayList<Object> data = new ArrayList<Object>();
 
-//    public SPAdapter() {
-//        super();
-//    }
+    public SPAdapter() {
+        super();
+    }
+
+    public SPAdapter(ArrayList initialData) {
+        super();
+        if (initialData != null) {
+            data = initialData;
+        }
+    }
 
     @Override
     public SPViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -56,6 +63,7 @@ public class SPAdapter extends RecyclerView.Adapter <SPViewHolder> {
 
     public void setAdapterData(ArrayList initialData) {
         this.data = initialData;
+        notifyDataSetChanged();
     }
 
     @Override

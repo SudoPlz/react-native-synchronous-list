@@ -31,16 +31,25 @@ public class SPRecyclerView extends RecyclerView {
 //    private final VelocityHelper mVelocityHelper = new VelocityHelper();
 
     public SPRecyclerView(ReactContext context) {
+        this(context, null);
+    }
+
+    public SPRecyclerView(ReactContext context, ReadableArray newData) {
         super(context);
 
         // setting the layout parameters
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         // setting the list adapter (which will be holding the views and binding props to them)
-        setAdapter(new SPAdapter());
+        setAdapter(new SPAdapter(WritableAdvancedArray.shallowToArrayList(newData)));
+
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);//or HORIZONTAL
 
         // setting the layout manager (which will be responsible for laying out the views)
-        setLayoutManager(new LinearLayoutManager(context));
+        setLayoutManager(linearLayoutManager);
+
     }
 
     public void setData(ReadableArray newData) {
