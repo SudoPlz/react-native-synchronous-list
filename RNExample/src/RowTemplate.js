@@ -17,7 +17,7 @@ const TemplateName = 'MyTemplate';
 //   </View>
 // );
 const RowTemplate = (props) => (
-  <View style={{ top: 10, padding: 10, width: props.width, height: props.height, backgroundColor: '#AAA13377'}}>
+  <View style={{ padding: 10, width: props.width, height: props.height, backgroundColor: '#AAA13377'}}>
     <TextInput
       style={{ backgroundColor: '#FFFFFF99', flexGrow: 1 }}
       editable={false}
