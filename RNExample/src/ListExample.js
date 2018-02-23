@@ -17,7 +17,7 @@ const complexDataObj = [{
 },{
   name: "Row 2",
   width: 250,
-  height: 70,
+  height: 300,
 },{
   name: "Row 3",
   width: 300,
@@ -52,13 +52,13 @@ const complexDataObj = [{
   height: 150,
 }];
 
-// for (const i = 11; i < 1500; i++) { 
-//   complexDataObj.push({
-//     name: `Row ${i}`,
-//     width: 150,
-//     height: 150,
-//   })
-// }
+for (const i = 11; i < 1500; i++) { 
+  complexDataObj.push({
+    name: `Row ${i}`,
+    width: 150,
+    height: 150,
+  })
+}
 
 class ListExample extends React.Component {
   render() {

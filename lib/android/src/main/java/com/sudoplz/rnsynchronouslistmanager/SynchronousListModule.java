@@ -4,7 +4,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.sudoplz.rnsynchronouslistmanager.List.SPRecyclerView;
+import com.sudoplz.rnsynchronouslistmanager.Views.List.SPRecyclerView;
 
 class SynchronousListModule extends ReactContextBaseJavaModule {
     private SPRecyclerView calendarInstance;

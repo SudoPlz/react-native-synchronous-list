@@ -1,39 +1,29 @@
-    package com.sudoplz.rnsynchronouslistmanager.Sync;
+    package com.sudoplz.rnsynchronouslistmanager.Views;
 
-    import android.os.Bundle;
-    import android.support.v7.widget.RecyclerView;
     import android.view.ViewGroup;
 
 
-    import com.facebook.react.bridge.AssertionException;
-    import com.facebook.react.bridge.CatalystInstance;
-    import com.facebook.react.bridge.WritableNativeMap;
-    import com.facebook.react.bridge.queue.MessageQueueThread;
     import com.facebook.react.bridge.queue.MessageQueueThreadImpl;
-    import com.facebook.react.bridge.queue.ReactQueueConfiguration;
-    import com.facebook.react.modules.appregistry.AppRegistry;
-    import com.facebook.systrace.Systrace;
+    import com.sudoplz.rnsynchronouslistmanager.Sync.Instruction;
+    import com.sudoplz.rnsynchronouslistmanager.Sync.Recipe;
+    import com.sudoplz.rnsynchronouslistmanager.Sync.SyncRegistry;
+    import com.sudoplz.rnsynchronouslistmanager.Utils.FrameUtils;
     import com.sudoplz.rnsynchronouslistmanager.Utils.SPGlobals;
-    import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedArray;
     import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedMap;
     import com.facebook.react.ReactInstanceManager;
     import com.facebook.react.ReactNativeHost;
     import com.facebook.react.ReactRootView;
     import com.facebook.react.bridge.ReactContext;
-    import com.facebook.react.bridge.ReadableArray;
     import com.facebook.react.bridge.ReadableMap;
     import com.facebook.react.bridge.ReadableMapKeySetIterator;
     import com.facebook.react.bridge.ReadableType;
     import com.facebook.react.uimanager.UIManagerModule;
-    import com.facebook.react.bridge.Arguments;
 
     import java.util.ArrayList;
     import java.util.HashMap;
     import java.util.Map;
 
     import javax.annotation.Nullable;
-
-    import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
     /**
      * Created by SudoPlz on 02/11/2017.
@@ -46,7 +36,7 @@
         protected @Nullable ReactInstanceManager mReactInstanceManager;
         protected ReactContext ctx;
         protected @Nullable String mJSModuleName;
-        protected Boolean hasInitialised = false;
+        protected Boolean hasInit = false;
         protected Boolean isAttached = false;
         protected WritableAdvancedMap initialProps;
         protected MessageQueueThreadImpl nativeModulesThread;
@@ -82,7 +72,11 @@
                     System.out.println("Module "+mJSModuleName+".runApplication would normally run now");
                 }
             });
-            hasInitialised = false;
+
+            // setting the layout parameters
+            setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            hasInit = false;
             mJSModuleName = moduleName;
             ctx = context;
             mReactInstanceManager = rcHost.getReactInstanceManager();
@@ -146,9 +140,10 @@
 
             recipeTagToTag = new HashMap <Integer, Integer>();
             recipeTagToTag.put(new Integer(1), new Integer(rootTag));
-    //        recipeTagToTag.put(new Integer(1000001), new Integer(rootTag));
+            recipeTagToTag.put(new Integer(1000001), new Integer(rootTag));
 
-            for (int i = 0; i < recipeInstructions.size(); i++) { // for every instruction
+            final int operationCnt = recipeInstructions.size();
+            for (int i = 0; i < operationCnt; i++) { // for every instruction
                 // instruction example {"args":[125,"RCTText",1,{"allowFontScaling":true,"ellipsizeMode":"tail","accessible":true}],"cmd":"createView"} }
                 final Instruction instruction = recipeInstructions.get(i);
 
@@ -156,10 +151,9 @@
     //            final ReadableArray args = instruction.getArray("args");
 
 
-
                 // the command (usually either createView or setChildren)
                 String command = instruction.getInstructionType();
-
+                final int curOperation = i;
                 WritableAdvancedMap newValues;
                 if (this.initialProps != null) {
                     newValues = new WritableAdvancedMap(this.initialProps);
@@ -172,7 +166,7 @@
                     final ReadableMap props = this.bindProps(instruction.getProps(), newValues, binding, inverseBinding, false);
 
                     // get the instruction main view tag
-                    final int tag = this.getRecipeTag(instruction.getTag(), rootTag);
+                    final int tag = this.translateTagIfNeeded(instruction.getTag());
     //                System.out.println("Is on UI thread: "+ctx.isOnUiQueueThread()+ " is on native module thread: "+ctx.isOnNativeModulesQueueThread());
                     dispatchInAppropriateThread(new Runnable() {
                         @Override
@@ -180,18 +174,20 @@
                             final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
                             // and create the child
                             uiManager.createView(tag, instruction.getModuleName(), rootTag, props);
-    //                        try {
-    //                            uiManager.createView(tag, instruction.getModuleName(), rootTag, props);
-    //                        } catch (Error e) {
-    //                            System.out.println("runApplication.createView error: "+e);
-    //                            ctx.runOnUiQueueThread(this);
-    //                        }
+
+                            // check if that's the last operation
+                            if (curOperation == operationCnt - 1 && hasInit == false) {
+                                // if it is,
+                                hasInit = true;
+                                int viewRootTag = getRootViewTag();
+//                                System.out.println("@@@@@@@@@@@@@ View initialised for " + viewRootTag);
+                            }
                         }
                     });
 
                 } else if (command.equals("setChildren")) {
                     int initRootTag = instruction.getInitialRootTag();
-                    final int initialRootTag = this.getRecipeTag(initRootTag, rootTag);
+                    final int initialRootTag = this.translateTagIfNeeded(initRootTag);
                     dispatchInAppropriateThread(new Runnable() {
                         @Override
                         public void run() {
@@ -199,17 +195,19 @@
 
                             // set view relationships
                             uiManager.setChildren(initialRootTag, instruction.getHierarchy());
-    //                        try {
-    //                            uiManager.setChildren(initialRootTag, instruction.getHierarchy());
-    //                        } catch (Error e) {
-    //                            System.out.println("runApplication.setChildren error: "+e);
-    //                            ctx.runOnUiQueueThread(this);
-    //                        }
+
+                            // check if that's the last operation
+                            if (curOperation == operationCnt - 1 && hasInit == false) {
+                                // if it is,
+                                hasInit = true;
+                                int viewRootTag = getRootViewTag();
+//                                System.out.println("@@@@@@@@@@@@@ View initialised for " + viewRootTag);
+                            }
                         }
                     });
                 }
                 // else if (command.equals("manageChildren")) {
-                //     final int tag = this.getRecipeTag(args.getInt(0), rootTag);
+                //     final int tag = this.translateTagIfNeeded(args.getInt(0));
 
                 //     dispatchInAppropriateThread(new Runnable() {
                 //         @Override'
@@ -220,39 +218,21 @@
                 // }
 
             } // end of for loop
-            if (hasInitialised == false) {
-                hasInitialised = true;
-    //            this.setLayoutParams(new LayoutParams(300, 500));
-            }
+//            System.out.println("@@@@@@@@@@@@@ View attached for "+getRootViewTag());
             isAttached = true;
         }
 
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            int widthSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST);
-            int heightSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.AT_MOST);
+            int viewRootTag = getRootViewTag();
+//            System.out.println("@@@@@@@@@@@@@ Views measured for " + viewRootTag);
+            int widthSpec = MeasureSpec.makeMeasureSpec(FrameUtils.extractItemWidth(this.initialProps), MeasureSpec.EXACTLY);
+            int heightSpec = MeasureSpec.makeMeasureSpec(FrameUtils.extractItemHeight(this.initialProps), MeasureSpec.EXACTLY);
 
             super.onMeasure(widthSpec, heightSpec);
-
-            int height = MeasureSpec.getSize(heightMeasureSpec);
-            setMeasuredDimension(MeasureSpec.getSize(widthSpec), height);
         }
 
         public void updateProps(ReadableMap newProps) {
-    //        final SyncRootView self = this;
-    //        if (isAttached  == false) {
-    //            this.initialProps = newProps;
-    ////            ctx ctx = mReactInstanceManager.getCurrentReactContext();
-    //            post(new Runnable() {
-    //                // Post in the parent's message queue to make sure the parent
-    //                // lays out its children before you call getHitRect()
-    //                @Override
-    //                public void run() {
-    //                    self.runApplication();
-    //                    isAttached = true;
-    //                }
-    //            });
-    //        }
             if (recipeTagToTag == null) return;
 
             final int rootTag = getRootViewTag();
@@ -264,21 +244,15 @@
             ReadableMap inverseBinding = curRecipe.getRecipeInverseBindings();
             ArrayList<Instruction> recipeInstructions = curRecipe.getRecipeInstructions();
 
-
-    //        final ctx ctx = mReactInstanceManager.getCurrentReactContext();
-    //        final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
-    //        RCTUIManager<UIManagerInternals> *uiManager = (RCTUIManager<UIManagerInternals>*)self.bridge.uiManager;
-
             WritableAdvancedMap newValues = new WritableAdvancedMap(newProps);
 
             for (int x = 0; x < recipeInstructions.size(); x++) {
-                // for (NSDictionary *call in recipe)
                 final Instruction instruction = recipeInstructions.get(x);
 
                 // get the instruction main view tag
-                final int tag = this.getRecipeTag(instruction.getTag(), rootTag);
+                final int tag = this.translateTagIfNeeded(instruction.getTag());
 
-                final int initialRootTag = this.getRecipeTag(instruction.getInitialRootTag(), rootTag);
+                final int initialRootTag = this.translateTagIfNeeded(instruction.getInitialRootTag());
 
                 // the command (usually either createView or setChildren)
                 String command = instruction.getInstructionType();
@@ -295,13 +269,6 @@
 
                             // set view relationships
                             uiManager.updateView(tag, instruction.getModuleName(), props);
-    //                        try {
-    //                            uiManager.updateView(tag, instruction.getModuleName(), props);
-    //                        } catch (Error e) {
-    //                            System.out.println("updateProps.updateView error: "+e);
-    //                            ctx.runOnUiQueueThread(this);
-    //                        }
-
                         }
                     });
                     /**
@@ -328,12 +295,6 @@
                     final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
 
                     uiManager.onBatchComplete();
-    //                try {
-    //                    uiManager.onBatchComplete();
-    //                } catch (Error e) {
-    //                    System.out.println("updateProps.onBatchComplete error: "+e);
-    //                    ctx.runOnUiQueueThread(this);
-    //                }
                 }
             });
         }
@@ -344,7 +305,7 @@
         public ReadableMap bindProps(WritableAdvancedMap props, WritableAdvancedMap values, ReadableMap binding, ReadableMap inverseBinding, Boolean onlyChanges) {
 
             if (props == null) return null;
-    //        HashMap<String,Object> res = new HashMap<String,Object> ();
+
             WritableAdvancedMap resultMap = new WritableAdvancedMap();
             int mapSizeApproximation = 0;
             ReadableMapKeySetIterator propsIter = props.keySetIterator();
@@ -454,31 +415,13 @@
     //    }
 
 
-    //    private void runOnNativeModuleThread(Runnable runnable, ReactContext reactContext) {
-    //        if (ctx.isOnNativeModulesQueueThread()) {
-    //            runnable.run();
-    //        } else {
-    //            ctx.runOnNativeModulesQueueThread(runnable);
-    //        }
-    //    }
-
-        public int getRecipeTag(int recipeTag, int rootTag) {
-            // usually when the instruction is created (upon the app initialization) the root tag is 1
-            if (recipeTag == 1000001 || recipeTag == 1) {
-                // we want to replace that with the actual root tag
-                return rootTag;
+        public int translateTagIfNeeded(int recipeTag) {
+            if (recipeTagToTag.get(recipeTag) != null) {
+                return recipeTagToTag.get(recipeTag).intValue();
             }
-            return recipeTag;
-    //        if (recipeTagToTag == null) {
-    //            recipeTagToTag = new HashMap<Integer, Integer>();
-    //        }
-    //
-    //        if (recipeTagToTag.get(recipeTag) != null) {
-    //            return recipeTagToTag.get(recipeTag).intValue();
-    //        }
     //        int result = (int) this.allocateTag();
     //        recipeTagToTag.put(new Integer(recipeTag), result);
-    //        return result;
+            return recipeTag;
         }
 
 
@@ -496,19 +439,6 @@
             isAttached = false;
         }
 
-
-        @Override
-        public int getRootViewTag() {
-            int rootTag;
-//            if (hasInitialised == true) {
-                rootTag = super.getRootViewTag();
-//            } else {
-//                rootTag = super.getRootViewTag() - 10; // hack
-//    //             NO Idea why the root view tag generated is not the right one (we usually get 41 instead of 31)
-//    //             but the previous one (-10) is the right one
-//            }
-            return rootTag;
-        }
 
         protected SyncRegistry registryModule() {
             return ctx.getNativeModule(SyncRegistry.class);
@@ -529,11 +459,14 @@
         }
 
         public void setInitialProps(ReadableMap initProps) {
+//            System.out.println("@@@@@@@@@@@@@ View props received for " + getRootViewTag());
             this.initialProps = new WritableAdvancedMap(initProps);
         }
 
 
-
+        public Boolean hasInitialised() {
+            return hasInit;
+        }
 
 
     }

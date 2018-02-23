@@ -1,16 +1,14 @@
 package com.sudoplz.rnsynchronouslistmanager;
 
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.sudoplz.rnsynchronouslistmanager.List.SPRecyclerView;
+import com.sudoplz.rnsynchronouslistmanager.Views.List.SPRecyclerView;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
-import com.sudoplz.rnsynchronouslistmanager.List.SPView;
 import com.sudoplz.rnsynchronouslistmanager.Utils.SPGlobals;
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedArray;
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedMap;
@@ -37,22 +35,11 @@ public class SynchronousListManager extends ViewGroupManager <SPRecyclerView> {
 
     @Override
     public SPRecyclerView createViewInstance(ThemedReactContext context) {
-        WritableAdvancedMap map = new WritableAdvancedMap();
-        map.putString("name", "Test 1");
-        map.putInt("width", 100);
-        map.putInt("height", 300);
-
-        WritableAdvancedMap map2 = new WritableAdvancedMap();
-        map.putString("name", "Test 2");
-        map.putInt("width", 150);
-        map.putInt("height", 200);
-
-        WritableAdvancedArray initialData = new WritableAdvancedArray();
-        initialData.pushMap(map);
-        initialData.pushMap(map2);
 //        return new SPView(context, map);
+//        System.out.println("@@@@@@@@@@@@@ Created Synchronous list");
         if (listView == null) {
-            listView = new SPRecyclerView(context, initialData);
+//            listView = new SPRecyclerView(context, initialData);
+            listView = new SPRecyclerView(context);
         }
         return listView;
     }
@@ -61,25 +48,25 @@ public class SynchronousListManager extends ViewGroupManager <SPRecyclerView> {
         return listView;
     }
 
-//    @ReactProp(name = "data")
-//    public void setData(SPRecyclerView view, @Nullable ReadableArray data) {
-//        view.setData(data);
-//    }
-//
-//    @ReactProp(name = "templateName")
-//    public void setTemplateName(SPRecyclerView view, @Nullable String templateName) {
-//        globals.setMainViewTemplateName(templateName);
-//    }
-//
-//    @ReactProp(name = "numRenderRows")
-//    public void setNumRenderRows(SPRecyclerView view, @Nullable int numRenderRows) {
-//        globals.setNumRenderRows(numRenderRows);
-//    }
-//
-//    @ReactProp(name = "loopMode")
-//    public void setLoopMode(SPRecyclerView view, @Nullable String loopMode) {
-//        globals.setLoopMode(loopMode);
-//    }
+    @ReactProp(name = "data")
+    public void setData(SPRecyclerView view, @Nullable ReadableArray data) {
+        view.setData(data);
+    }
+
+    @ReactProp(name = "templateName")
+    public void setTemplateName(SPRecyclerView view, @Nullable String templateName) {
+        globals.setMainViewTemplateName(templateName);
+    }
+
+    @ReactProp(name = "numRenderRows")
+    public void setNumRenderRows(SPRecyclerView view, @Nullable int numRenderRows) {
+        globals.setNumRenderRows(numRenderRows);
+    }
+
+    @ReactProp(name = "loopMode")
+    public void setLoopMode(SPRecyclerView view, @Nullable String loopMode) {
+        globals.setLoopMode(loopMode);
+    }
 
 
 
