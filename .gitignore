@@ -23,7 +23,8 @@ project.xcworkspace
 
 # Gradle
 /build/
-lib/android/build/
+**/lib/android/build/
+**/android/build/
 RNExample/android/app/build/
 RNExample/android/app/gradle/
 RNExample/android/app/gradlew
