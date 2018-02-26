@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.sudoplz.rnsynchronouslistmanager.Utils.SPGlobals;
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedArray;
 
 /**
@@ -30,14 +31,15 @@ public class SPRecyclerView extends RecyclerView {
         super(context);
 
         // setting the layout parameters
-        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+//        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        setLayoutParams(new ViewGroup.LayoutParams(1000, 1794));
 
         // setting the list adapter (which will be holding the views and binding props to them)
         setAdapter(new SPAdapter(WritableAdvancedArray.shallowToArrayList(newData)));
 
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);//or HORIZONTAL
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);//or HORIZONTAL
 
         // setting the layout manager (which will be responsible for laying out the views)
         setLayoutManager(linearLayoutManager);
@@ -49,6 +51,20 @@ public class SPRecyclerView extends RecyclerView {
             SPAdapter adapter = (SPAdapter) getAdapter();
             adapter.setAdapterData(WritableAdvancedArray.shallowToArrayList(newData));
         }
+    }
+
+    public void onReload() {
+        // remove self from parent
+        ViewGroup parent = (ViewGroup) this.getParent();
+        parent.removeView(this);
+
+        // and clear all the views so that we create new ones
+        if (getAdapter() != null) {
+            SPAdapter adapter = (SPAdapter) getAdapter();
+            adapter.clearData();
+        }
+        this.removeAllViewsInLayout();
+
     }
 
 

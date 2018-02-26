@@ -3601,9 +3601,8 @@ react-devtools-core@3.0.0:
     shell-quote "^1.6.1"
     ws "^2.0.3"
 
-"react-native-synchronous-list@github:SudoPlz/react-native-synchronous-list#android":
+"react-native-synchronous-list@file:..":
   version "0.1.1"
-  resolved "https://codeload.github.com/SudoPlz/react-native-synchronous-list/tar.gz/6b3cc0760577de18a92c12c328342e47ba527b84"
 
 react-native@0.53.0:
   version "0.53.0"

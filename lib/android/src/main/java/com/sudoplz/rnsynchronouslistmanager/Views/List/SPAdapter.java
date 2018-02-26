@@ -60,9 +60,21 @@ public class SPAdapter extends RecyclerView.Adapter <SPViewHolder> {
         ReadableMap dataForChild = (ReadableMap) data.get(position);
 
         if (holder.viewHasInitialised()) {
+            System.out.println("@@@@@@@@@@@@@@@@@ updating child: "+position);
             holder.updateItemProps(dataForChild);
         } else {
+            System.out.println("@@@@@@@@@@@@@@@@@ setting child: "+position);
             holder.setItemProps(dataForChild);
+        }
+    }
+
+    public void clearData() {
+        if (this.data != null) {
+            int dataCnt = this.data.size();
+            if (dataCnt > 0) {
+                this.data.clear();
+                notifyItemRangeRemoved(0, dataCnt);
+            }
         }
     }
 

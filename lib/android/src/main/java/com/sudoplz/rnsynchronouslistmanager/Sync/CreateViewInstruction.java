@@ -52,4 +52,9 @@ public class CreateViewInstruction implements Instruction {
     public String getInstructionType() {
         return "createView";
     }
+
+    @Override
+    public String toString() {
+        return "createView: ["+tag+", "+moduleName+", "+initialRootTag+", "+props;
+    }
 }

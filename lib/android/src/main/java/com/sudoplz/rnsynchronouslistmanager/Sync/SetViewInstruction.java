@@ -47,4 +47,9 @@ public class SetViewInstruction implements Instruction {
     public String getInstructionType() {
         return "setChildren";
     }
+
+    @Override
+    public String toString() {
+        return "setChildren: "+initialRootTag+", "+hierarchyArr;
+    }
 }

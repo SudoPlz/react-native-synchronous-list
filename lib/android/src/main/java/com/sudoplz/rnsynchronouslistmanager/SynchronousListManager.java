@@ -1,6 +1,7 @@
 package com.sudoplz.rnsynchronouslistmanager;
 
 import android.support.annotation.Nullable;
+import android.view.ViewGroup;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -10,8 +11,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.sudoplz.rnsynchronouslistmanager.Utils.SPGlobals;
-import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedArray;
-import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedMap;
 
 /**
  * Created by SudoPlz on 05/02/2018.
@@ -20,10 +19,12 @@ import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedMap;
 public class SynchronousListManager extends ViewGroupManager <SPRecyclerView> {
     private SPRecyclerView listView;
     private SPGlobals globals;
+    private boolean hasInitialised;
 
     public SynchronousListManager(ReactContext context, ReactNativeHost rcHost) {
         super();
         globals = SPGlobals.init(context, rcHost);
+        hasInitialised = false;
     }
 
 
@@ -40,7 +41,19 @@ public class SynchronousListManager extends ViewGroupManager <SPRecyclerView> {
         if (listView == null) {
 //            listView = new SPRecyclerView(context, initialData);
             listView = new SPRecyclerView(context);
+        } else if (hasInitialised == true) {
+            // if the list has not been initialised yet, but SOMEHOW the list view was NOT null
+            // that means the app reloaded, so let's remove the listView from it's parent (since it's going to be added on another parent)
+            globals.setRcContext(context);
+            listView.onReload();
+
         }
+        hasInitialised = true;
+//        HorizontalScrollView hr = new HorizontalScrollView(context);
+//        hr.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 1920));
+//
+//        hr.addView(listView);
+//        return hr;
         return listView;
     }
 
@@ -50,7 +63,7 @@ public class SynchronousListManager extends ViewGroupManager <SPRecyclerView> {
 
     @ReactProp(name = "data")
     public void setData(SPRecyclerView view, @Nullable ReadableArray data) {
-        view.setData(data);
+        listView.setData(data);
     }
 
     @ReactProp(name = "templateName")

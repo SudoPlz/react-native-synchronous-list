@@ -33,7 +33,7 @@
 
         protected Map<Integer,Integer> recipeTagToTag;
         protected Map<String,String> knownPropNameMap;
-        protected @Nullable ReactInstanceManager mReactInstanceManager;
+//        protected @Nullable ReactInstanceManager mReactInstanceManager;
         protected ReactContext ctx;
         protected @Nullable String mJSModuleName;
         protected Boolean hasInit = false;
@@ -44,19 +44,12 @@
 
 
         public SyncRootView(String moduleName) {
-            this(moduleName, SPGlobals.getInstance().getRcContext(), SPGlobals.getInstance().getRcHost(), null);
+            this(moduleName, null);
         }
+
 
         public SyncRootView(String moduleName, ReadableMap props) {
-            this(moduleName, SPGlobals.getInstance().getRcContext(), SPGlobals.getInstance().getRcHost(), props);
-        }
-
-        public SyncRootView(String moduleName, ReactContext context, ReadableMap props) {
-            this(moduleName, context, SPGlobals.getInstance().getRcHost(), props);
-        }
-
-        public SyncRootView(final String moduleName, ReactContext context, final ReactNativeHost rcHost, ReadableMap props) {
-            super(context);
+            super(SPGlobals.getInstance().getRcContext());
 
             if (props != null) {
                 this.initialProps = new WritableAdvancedMap(props);
@@ -78,8 +71,7 @@
 
             hasInit = false;
             mJSModuleName = moduleName;
-            ctx = context;
-            mReactInstanceManager = rcHost.getReactInstanceManager();
+
 
             // prepare the known properties name association map
             // we want to rename the properties that have to do with colors,
@@ -89,21 +81,9 @@
             knownPropNameMap.put("bordColor", "borderColor");
             knownPropNameMap.put("txtColor", "color");
 
-
-            nativeModulesThread = (MessageQueueThreadImpl) ctx.getCatalystInstance().getReactQueueConfiguration().getNativeModulesQueueThread();
-
-    //        Thread cur = Thread.currentThread();
-            startReactApplication(mReactInstanceManager, mJSModuleName);
+            startReactApplication(SPGlobals.getInstance().getRcHost().getReactInstanceManager(), mJSModuleName);
             this.runApplication(); // we want this ton run on the UI Thread
 
-    //        this.post(new Runnable() {
-    //            // Post in the parent's message queue to make sure the parent
-    //            // lays out its children before you call getHitRect()
-    //            @Override
-    //            public void run() {
-    //                self.startReactApplication(mReactInstanceManager, mJSModuleName);
-    //            }
-    //        });
         }
 
 
@@ -127,7 +107,7 @@
 
         public void runApplication() {
 
-
+            resetCtxBasedProps();
             final int rootTag = getRootViewTag();
 
             SyncRegistry syncModule = registryModule();
@@ -234,6 +214,8 @@
 
         public void updateProps(ReadableMap newProps) {
             if (recipeTagToTag == null) return;
+
+            resetCtxBasedProps();
 
             final int rootTag = getRootViewTag();
 
@@ -434,8 +416,8 @@
         @Override
         protected void onDetachedFromWindow() {
             super.onDetachedFromWindow();
-            ViewGroup parent = (ViewGroup) this.getParent();
-            parent.removeView(this);
+//            ViewGroup parent = (ViewGroup) this.getParent();
+//            parent.removeView(this);
             isAttached = false;
         }
 
@@ -469,4 +451,13 @@
         }
 
 
+        @Override
+        public String toString() {
+            return "SyncRootView: "+mJSModuleName+" with root view: "+getRootViewTag();
+        }
+
+        public void resetCtxBasedProps() {
+            ctx = SPGlobals.getInstance().getRcContext();
+            nativeModulesThread = (MessageQueueThreadImpl) ctx.getCatalystInstance().getReactQueueConfiguration().getNativeModulesQueueThread();
+        }
     }
