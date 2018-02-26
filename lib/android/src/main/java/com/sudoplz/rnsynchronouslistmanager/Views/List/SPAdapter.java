@@ -23,7 +23,7 @@ public class SPAdapter extends RecyclerView.Adapter <SPViewHolder> {
 
     public SPAdapter(ArrayList initialData) {
         super();
-        if (initialData != null) {
+        if (initialData != null && initialData.size() > 0) {
             data = initialData;
         }
     }
@@ -49,8 +49,10 @@ public class SPAdapter extends RecyclerView.Adapter <SPViewHolder> {
     }
 
     public void setAdapterData(ArrayList initialData) {
-        this.data = initialData;
-        notifyDataSetChanged();
+        if (initialData != null && initialData.size() > 0) {
+            this.data = initialData;
+            notifyDataSetChanged();
+        }
     }
 
     @Override
