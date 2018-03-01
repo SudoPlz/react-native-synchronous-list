@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-  TextInput,
+  // TextInput,
+  Text,
   View,
 } from 'react-native';
 import { SyncRegistry } from 'react-native-synchronous-list';
@@ -18,11 +19,12 @@ const TemplateName = 'MyTemplate';
 // );
 const RowTemplate = (props) => (
   <View style={{ padding: 10, width: props.width, height: props.height, backgroundColor: '#AAA13377'}}>
-    <TextInput
+    <Text
       style={{ backgroundColor: '#FFFFFF99', flexGrow: 1 }}
       editable={false}
-      value={props.name}
-    />
+    >
+      {props.name}
+    </Text>
   </View>
 );
   

@@ -64,8 +64,8 @@ public class SPAdapter extends RecyclerView.Adapter <SPViewHolder> {
             System.out.println("@@@@@@@@@@@@@@@@@ updating child: "+position);
             holder.updateItemProps(dataForChild);
         } else {
-            System.out.println("@@@@@@@@@@@@@@@@@ setting child: "+position);
-            holder.setItemProps(dataForChild);
+            System.out.println("@@@@@@@@@@@@@@@@@ initialising child: "+position);
+            holder.initialiseView(dataForChild);
         }
     }
 

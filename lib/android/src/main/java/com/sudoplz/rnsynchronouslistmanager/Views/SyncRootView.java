@@ -59,9 +59,6 @@
                 @Override
                 public void run() {
                     AssertionError re;
-    //                if (isAttached  == false) {
-    //                    self.runApplication();
-    //                }
                     System.out.println("Module "+mJSModuleName+".runApplication would normally run now");
                 }
             });
@@ -82,7 +79,17 @@
             knownPropNameMap.put("txtColor", "color");
 
             startReactApplication(SPGlobals.getInstance().getRcHost().getReactInstanceManager(), mJSModuleName);
-            this.runApplication(); // we want this ton run on the UI Thread
+
+            resetCtxBasedProps();
+            final int rootTag = getRootViewTag();
+
+            recipeTagToTag = new HashMap <Integer, Integer>();
+            recipeTagToTag.put(new Integer(1), new Integer(rootTag));
+            recipeTagToTag.put(new Integer(1000001), new Integer(rootTag));
+
+
+//            System.out.println("@@@@@@@@@@@@@ View attached for "+getRootViewTag());
+            isAttached = true;
 
         }
 
@@ -91,12 +98,12 @@
         protected void onAttachedToWindow() {
             final SyncRootView self = this;
             if (isAttached  == false) {
-                this.post(new Runnable() {
+                dispatchInAppropriateThread(new Runnable() {
                     // Post in the parent's message queue to make sure the parent
                     // lays out its children before you call getHitRect()
                     @Override
                     public void run() {
-                        self.runApplication(); // we want this ton run on the UI Thread
+                        self.drawOnScreen(); // we want this ton run on the UI Thread
                     }
                 });
             }
@@ -104,12 +111,14 @@
         }
 
 
+        public void drawOnScreen() {
+            this.drawOnScreen(null);
+        }
 
-        public void runApplication() {
+        public void drawOnScreen(ReadableMap newProps) {
+            setInitialProps(newProps);
 
-            resetCtxBasedProps();
             final int rootTag = getRootViewTag();
-
             SyncRegistry syncModule = registryModule();
 
             Recipe curRecipe = syncModule.getRegistry().get(mJSModuleName);
@@ -117,18 +126,13 @@
             WritableAdvancedMap binding = curRecipe.getRecipeBindings();
             ReadableMap inverseBinding = curRecipe.getRecipeInverseBindings();
             ArrayList<Instruction> recipeInstructions = curRecipe.getRecipeInstructions();
-
-            recipeTagToTag = new HashMap <Integer, Integer>();
-            recipeTagToTag.put(new Integer(1), new Integer(rootTag));
-            recipeTagToTag.put(new Integer(1000001), new Integer(rootTag));
-
             final int operationCnt = recipeInstructions.size();
             for (int i = 0; i < operationCnt; i++) { // for every instruction
                 // instruction example {"args":[125,"RCTText",1,{"allowFontScaling":true,"ellipsizeMode":"tail","accessible":true}],"cmd":"createView"} }
                 final Instruction instruction = recipeInstructions.get(i);
 
                 // get it's arguments
-    //            final ReadableArray args = instruction.getArray("args");
+                //            final ReadableArray args = instruction.getArray("args");
 
 
                 // the command (usually either createView or setChildren)
@@ -147,11 +151,12 @@
 
                     // get the instruction main view tag
                     final int tag = this.translateTagIfNeeded(instruction.getTag());
-    //                System.out.println("Is on UI thread: "+ctx.isOnUiQueueThread()+ " is on native module thread: "+ctx.isOnNativeModulesQueueThread());
+                    //                System.out.println("Is on UI thread: "+ctx.isOnUiQueueThread()+ " is on native module thread: "+ctx.isOnNativeModulesQueueThread());
                     dispatchInAppropriateThread(new Runnable() {
                         @Override
                         public void run() {
                             final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
+                            System.out.println("@@@@@@ Now creating view for : "+getRootView());
                             // and create the child
                             uiManager.createView(tag, instruction.getModuleName(), rootTag, props);
 
@@ -198,8 +203,6 @@
                 // }
 
             } // end of for loop
-//            System.out.println("@@@@@@@@@@@@@ View attached for "+getRootViewTag());
-            isAttached = true;
         }
 
         @Override
@@ -441,8 +444,10 @@
         }
 
         public void setInitialProps(ReadableMap initProps) {
-//            System.out.println("@@@@@@@@@@@@@ View props received for " + getRootViewTag());
-            this.initialProps = new WritableAdvancedMap(initProps);
+            if (initProps != null) {
+//                System.out.println("@@@@@@@@@@@@@ View props received for " + getRootViewTag());
+                this.initialProps = new WritableAdvancedMap(initProps);
+            }
         }
 
 

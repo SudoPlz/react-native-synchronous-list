@@ -27,9 +27,14 @@ public class SPViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void setItemProps(ReadableMap newProps) {
-        curView.setInitialProps(newProps);
+//    public void setItemProps(ReadableMap newProps) {
+//        curView.setInitialProps(newProps);
+//    }
+
+    public void initialiseView(ReadableMap newProps) {
+        curView.drawOnScreen(newProps);
     }
+
 
     public Boolean viewHasInitialised() {
         return curView.hasInitialised();
