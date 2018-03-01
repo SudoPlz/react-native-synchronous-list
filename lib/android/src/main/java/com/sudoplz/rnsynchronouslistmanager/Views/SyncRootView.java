@@ -4,14 +4,12 @@
 
 
     import com.facebook.react.bridge.queue.MessageQueueThreadImpl;
-    import com.sudoplz.rnsynchronouslistmanager.Sync.Instruction;
+    import com.sudoplz.rnsynchronouslistmanager.Sync.Instructions.Instruction;
     import com.sudoplz.rnsynchronouslistmanager.Sync.Recipe;
     import com.sudoplz.rnsynchronouslistmanager.Sync.SyncRegistry;
     import com.sudoplz.rnsynchronouslistmanager.Utils.FrameUtils;
     import com.sudoplz.rnsynchronouslistmanager.Utils.SPGlobals;
     import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedMap;
-    import com.facebook.react.ReactInstanceManager;
-    import com.facebook.react.ReactNativeHost;
     import com.facebook.react.ReactRootView;
     import com.facebook.react.bridge.ReactContext;
     import com.facebook.react.bridge.ReadableMap;
@@ -40,17 +38,23 @@
         protected Boolean isAttached = false;
         protected WritableAdvancedMap initialProps;
         protected MessageQueueThreadImpl nativeModulesThread;
+        protected Integer lastPosition;
     //    private @Nullable Bundle mAppProperties;
 
 
         public SyncRootView(String moduleName) {
-            this(moduleName, null);
+            this(moduleName, null, SPGlobals.getInstance().getRcContext());
+        }
+
+        public SyncRootView(String moduleName, ReactContext ctx) {
+            this(moduleName, null, ctx);
         }
 
 
-        public SyncRootView(String moduleName, ReadableMap props) {
-            super(SPGlobals.getInstance().getRcContext());
+        public SyncRootView(String moduleName, ReadableMap props, ReactContext context) {
+            super(context);
 
+            ctx = context;
             if (props != null) {
                 this.initialProps = new WritableAdvancedMap(props);
             }
@@ -117,7 +121,7 @@
 
         public void drawOnScreen(ReadableMap newProps) {
             setInitialProps(newProps);
-
+            System.out.println("@@@@@@ Now creating view for : "+getRootView());
             final int rootTag = getRootViewTag();
             SyncRegistry syncModule = registryModule();
 
@@ -156,7 +160,7 @@
                         @Override
                         public void run() {
                             final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
-                            System.out.println("@@@@@@ Now creating view for : "+getRootView());
+//                            System.out.println("@@@@@@ Now creating view for : "+getRootView());
                             // and create the child
                             uiManager.createView(tag, instruction.getModuleName(), rootTag, props);
 
@@ -205,6 +209,12 @@
             } // end of for loop
         }
 
+        public void terminate() {
+            System.out.println("@@@@@@@@@@@@@@@@@ Now terminating: "+getRootViewTag());
+            this.removeAllViews();
+            hasInit = false;
+        }
+
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //            int viewRootTag = getRootViewTag();
@@ -216,8 +226,8 @@
         }
 
         public void updateProps(ReadableMap newProps) {
+            System.out.println("@@@@@@ Now updating view for : "+getRootView());
             if (recipeTagToTag == null) return;
-
             resetCtxBasedProps();
 
             final int rootTag = getRootViewTag();
@@ -419,11 +429,12 @@
         @Override
         protected void onDetachedFromWindow() {
             super.onDetachedFromWindow();
+            System.out.println("@@@@@@@@@@@@@@@@@ Now detaching: "+getRootViewTag());
+//            unmountReactApplication();
 //            ViewGroup parent = (ViewGroup) this.getParent();
 //            parent.removeView(this);
-            isAttached = false;
+//            isAttached = false;
         }
-
 
         protected SyncRegistry registryModule() {
             return ctx.getNativeModule(SyncRegistry.class);
@@ -462,7 +473,22 @@
         }
 
         public void resetCtxBasedProps() {
-            ctx = SPGlobals.getInstance().getRcContext();
             nativeModulesThread = (MessageQueueThreadImpl) ctx.getCatalystInstance().getReactQueueConfiguration().getNativeModulesQueueThread();
+        }
+
+        public Integer getLastPosition() {
+            return lastPosition.intValue();
+        }
+
+        public void setLastPosition(Integer lastPosition) {
+            this.lastPosition = lastPosition;
+        }
+
+        public void setLastPosition(int lastPosition) {
+            this.lastPosition = new Integer(lastPosition);
+        }
+
+        public Boolean hasLastPosition() {
+            return lastPosition != null;
         }
     }

@@ -2,7 +2,9 @@ package com.sudoplz.rnsynchronouslistmanager.Sync;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedArray;
+import com.sudoplz.rnsynchronouslistmanager.Sync.Instructions.CreateViewInstruction;
+import com.sudoplz.rnsynchronouslistmanager.Sync.Instructions.Instruction;
+import com.sudoplz.rnsynchronouslistmanager.Sync.Instructions.SetViewInstruction;
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedMap;
 
 import java.util.ArrayList;

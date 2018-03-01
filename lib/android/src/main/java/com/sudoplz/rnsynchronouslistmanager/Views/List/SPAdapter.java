@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.sudoplz.rnsynchronouslistmanager.Views.SyncRootView;
 import com.sudoplz.rnsynchronouslistmanager.Utils.SPGlobals;
@@ -43,7 +44,7 @@ public class SPAdapter extends RecyclerView.Adapter <SPViewHolder> {
 //        text.setText("YOO");
 //        SPViewHolder holder = new SPViewHolder(text);
 
-        SyncRootView child = new SyncRootView(SPGlobals.getInstance().getMainViewTemplateName());
+        SyncRootView child = new SyncRootView(SPGlobals.getInstance().getMainViewTemplateName(), null, (ReactContext) parent.getContext());
         SPViewHolder holder = new SPViewHolder(child);
         return holder;
 
@@ -59,14 +60,7 @@ public class SPAdapter extends RecyclerView.Adapter <SPViewHolder> {
     @Override
     public void onBindViewHolder(SPViewHolder holder, int position) {
         ReadableMap dataForChild = (ReadableMap) data.get(position);
-
-        if (holder.viewHasInitialised()) {
-            System.out.println("@@@@@@@@@@@@@@@@@ updating child: "+position);
-            holder.updateItemProps(dataForChild);
-        } else {
-            System.out.println("@@@@@@@@@@@@@@@@@ initialising child: "+position);
-            holder.initialiseView(dataForChild);
-        }
+        holder.setItemData(dataForChild, position);
     }
 
     public void clearData() {

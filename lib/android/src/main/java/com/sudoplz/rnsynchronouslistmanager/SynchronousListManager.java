@@ -24,27 +24,27 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
  * Created by SudoPlz on 05/02/2018.
  */
 
-public class SynchronousListManager extends ViewGroupManager <NestedScrollView> {
-    private SPRecyclerView listView;
-    private SPGlobals globals;
-    private boolean hasInitialised;
+public class SynchronousListManager extends ViewGroupManager <SPRecyclerView> {
+        private SPRecyclerView listView;
+        private SPGlobals globals;
+        private boolean hasInitialised;
 
     public SynchronousListManager(ReactContext context, ReactNativeHost rcHost) {
-        super();
-        globals = SPGlobals.init(context, rcHost);
-        hasInitialised = false;
-    }
+            super();
+            globals = SPGlobals.init(context, rcHost);
+            hasInitialised = false;
+        }
 
 
-    @Override
-    public String getName() {
-        return "RCTSynchronousList";
-    }
+        @Override
+        public String getName() {
+            return "RCTSynchronousList";
+        }
 
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    @Override
-    public NestedScrollView createViewInstance(ThemedReactContext context) {
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+        @Override
+        public SPRecyclerView createViewInstance(ThemedReactContext context) {
 //        return new SPView(context, map);
 //        System.out.println("@@@@@@@@@@@@@ Created Synchronous list");
 //        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -63,7 +63,7 @@ public class SynchronousListManager extends ViewGroupManager <NestedScrollView> 
             listView.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-            linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);//or HORIZONTAL
+            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);//or HORIZONTAL
 //            linearLayoutManager.setMe
 
             // setting the layout manager (which will be responsible for laying out the views)
@@ -76,15 +76,15 @@ public class SynchronousListManager extends ViewGroupManager <NestedScrollView> 
 
         }
         hasInitialised = true;
-        NestedScrollView verticalParent = new NestedScrollView(context);
-        verticalParent.setVerticalScrollBarEnabled(true);
-//        HorizontalScrollView hr = new HorizontalScrollView(context);
-        verticalParent.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
-        verticalParent.addView(listView);
+//        NestedScrollView verticalParent = new NestedScrollView(context);
+//        verticalParent.setVerticalScrollBarEnabled(true);
+////        HorizontalScrollView hr = new HorizontalScrollView(context);
+//        verticalParent.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+//        verticalParent.addView(listView);
 //
 //        hr.addView(listView);
 //        return hr;
-        return verticalParent;
+        return listView;
     }
 
     public SPRecyclerView getListView() {
