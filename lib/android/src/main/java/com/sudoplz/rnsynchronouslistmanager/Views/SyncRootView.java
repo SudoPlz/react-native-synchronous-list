@@ -204,7 +204,7 @@
 
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            int viewRootTag = getRootViewTag();
+//            int viewRootTag = getRootViewTag();
 //            System.out.println("@@@@@@@@@@@@@ Views measured for " + viewRootTag);
             int widthSpec = MeasureSpec.makeMeasureSpec(FrameUtils.extractItemWidth(this.initialProps), MeasureSpec.EXACTLY);
             int heightSpec = MeasureSpec.makeMeasureSpec(FrameUtils.extractItemHeight(this.initialProps), MeasureSpec.EXACTLY);

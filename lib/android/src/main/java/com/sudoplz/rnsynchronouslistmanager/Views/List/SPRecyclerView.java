@@ -30,19 +30,8 @@ public class SPRecyclerView extends RecyclerView {
     public SPRecyclerView(ReactContext context, ReadableArray newData) {
         super(context);
 
-        // setting the layout parameters
-//        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        setLayoutParams(new ViewGroup.LayoutParams(1000, 1794));
-
         // setting the list adapter (which will be holding the views and binding props to them)
         setAdapter(new SPAdapter(WritableAdvancedArray.shallowToArrayList(newData)));
-
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);//or HORIZONTAL
-
-        // setting the layout manager (which will be responsible for laying out the views)
-        setLayoutManager(linearLayoutManager);
 
     }
 

@@ -1,7 +1,9 @@
 package com.sudoplz.rnsynchronouslistmanager.Views.List;
 
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.sudoplz.rnsynchronouslistmanager.Views.SyncRootView;
@@ -37,13 +39,12 @@ public class SPAdapter extends RecyclerView.Adapter <SPViewHolder> {
 //                g.getRcHost()
 //        );
 //        ;
-//        SPViewHolder holder = new SPViewHolder(new SPView());
 //        TextView text = new TextView(parent.getContext());
-//        return new SPViewHolder(text);
+//        text.setText("YOO");
+//        SPViewHolder holder = new SPViewHolder(text);
 
         SyncRootView child = new SyncRootView(SPGlobals.getInstance().getMainViewTemplateName());
         SPViewHolder holder = new SPViewHolder(child);
-//        child.runApplication();
         return holder;
 
     }
