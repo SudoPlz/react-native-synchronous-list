@@ -8,8 +8,10 @@
 | --- | --- |
 | Recipe registration implementation | ✅ |
 | SyncRootView implementation | ✅ |
-| RecyclerListView implementation | :x: |
-| RecyclerListView row item item (extends `SyncRootView`) | :x: |
+| RecyclerListView implementation | ✅ |
+| RecyclerListView row item item (extends `SyncRootView`) | ✅|
+| Reload working | :x: |
+
 
 ## Consept
 #### What:
