@@ -1,7 +1,10 @@
 package com.sudoplz.rnsynchronouslistmanager.Sync.Instructions;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedMap;
+
+import java.util.Map;
 
 /**
  * Created by SudoPlz on 19/02/2018.

@@ -55,7 +55,7 @@ const complexDataObj = [{
 for (const i = 11; i < 1500; i++) { 
   complexDataObj.push({
     name: `Row ${i}`,
-    width: 150,
+    width: 400,
     height: 150,
   })
 }

@@ -53,7 +53,7 @@ public class SPRecyclerView extends RecyclerView {
             adapter.clearData();
         }
         this.removeAllViewsInLayout();
-
+        // TODO: go through all the SyncRootViews and get a new ref to the thread
     }
 
 

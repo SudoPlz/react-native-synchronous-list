@@ -1,8 +1,13 @@
     package com.sudoplz.rnsynchronouslistmanager.Views;
 
+    import android.os.Looper;
+    import android.os.Message;
     import android.view.ViewGroup;
 
 
+    import com.facebook.react.bridge.ReadableArray;
+    import com.facebook.react.bridge.WritableArray;
+    import com.facebook.react.bridge.WritableNativeArray;
     import com.facebook.react.bridge.queue.MessageQueueThreadImpl;
     import com.sudoplz.rnsynchronouslistmanager.Sync.Instructions.Instruction;
     import com.sudoplz.rnsynchronouslistmanager.Sync.Recipe;
@@ -36,7 +41,7 @@
         protected @Nullable String mJSModuleName;
         protected Boolean hasInit = false;
         protected Boolean isAttached = false;
-        protected WritableAdvancedMap initialProps;
+        protected ReadableMap storedProps;
         protected MessageQueueThreadImpl nativeModulesThread;
         protected Integer lastPosition;
     //    private @Nullable Bundle mAppProperties;
@@ -56,7 +61,8 @@
 
             ctx = context;
             if (props != null) {
-                this.initialProps = new WritableAdvancedMap(props);
+//                this.storedProps = new WritableAdvancedMap(props);
+                this.storedProps = props;
             }
             final SyncRootView self = this;
             this.setJSEntryPoint(new Runnable() {
@@ -120,8 +126,9 @@
         }
 
         public void drawOnScreen(ReadableMap newProps) {
-            setInitialProps(newProps);
-            System.out.println("@@@@@@ Now creating view for : "+getRootView());
+            this.storedProps = newProps;
+            resetCtxBasedProps();
+//            System.out.println("@@@@@@ Now creating view for : "+getRootView());
             final int rootTag = getRootViewTag();
             SyncRegistry syncModule = registryModule();
 
@@ -143,8 +150,8 @@
                 String command = instruction.getInstructionType();
                 final int curOperation = i;
                 WritableAdvancedMap newValues;
-                if (this.initialProps != null) {
-                    newValues = new WritableAdvancedMap(this.initialProps);
+                if (this.storedProps != null) {
+                    newValues = new WritableAdvancedMap(this.storedProps);
                 } else {
                     newValues = new WritableAdvancedMap();
                 }
@@ -183,7 +190,7 @@
                             final UIManagerModule uiManager = ctx.getNativeModule(UIManagerModule.class);
 
                             // set view relationships
-                            uiManager.setChildren(initialRootTag, instruction.getHierarchy());
+                            uiManager.setChildren(initialRootTag, translateChildHierarchyArray(instruction.getHierarchy()));
 
                             // check if that's the last operation
                             if (curOperation == operationCnt - 1 && hasInit == false) {
@@ -210,7 +217,7 @@
         }
 
         public void terminate() {
-            System.out.println("@@@@@@@@@@@@@@@@@ Now terminating: "+getRootViewTag());
+//            System.out.println("@@@@@@@@@@@@@@@@@ Now terminating: "+getRootViewTag());
             this.removeAllViews();
             hasInit = false;
         }
@@ -219,15 +226,16 @@
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //            int viewRootTag = getRootViewTag();
 //            System.out.println("@@@@@@@@@@@@@ Views measured for " + viewRootTag);
-            int widthSpec = MeasureSpec.makeMeasureSpec(FrameUtils.extractItemWidth(this.initialProps), MeasureSpec.EXACTLY);
-            int heightSpec = MeasureSpec.makeMeasureSpec(FrameUtils.extractItemHeight(this.initialProps), MeasureSpec.EXACTLY);
+            int widthSpec = MeasureSpec.makeMeasureSpec(FrameUtils.extractItemWidth(this.storedProps), MeasureSpec.EXACTLY);
+            int heightSpec = MeasureSpec.makeMeasureSpec(FrameUtils.extractItemHeight(this.storedProps), MeasureSpec.EXACTLY);
 
             super.onMeasure(widthSpec, heightSpec);
         }
 
         public void updateProps(ReadableMap newProps) {
-            System.out.println("@@@@@@ Now updating view for : "+getRootView());
+//            System.out.println("@@@@@@ Now updating view for : "+getRootView());
             if (recipeTagToTag == null) return;
+            this.storedProps = newProps;
             resetCtxBasedProps();
 
             final int rootTag = getRootViewTag();
@@ -398,25 +406,39 @@
         }
 
 
-    //    public long allocateTag() {
-    //        SyncRegistry registry = registryModule();
-    //        long result = registry.getLastTag();
-    //        result++;
-    //        if (result % 10 == 1) {
-    //            result++;
-    //        }
-    //        registry.setLastTag(result);
-    //        return result;
-    //    }
+        public long allocateTag() {
+            SyncRegistry registry = registryModule();
+            long result = registry.getLastTag();
+            result++;
+            if (result % 10 == 1) {
+                result++;
+            }
+            registry.setLastTag(result);
+            return result;
+        }
 
 
         public int translateTagIfNeeded(int recipeTag) {
             if (recipeTagToTag.get(recipeTag) != null) {
                 return recipeTagToTag.get(recipeTag).intValue();
             }
-    //        int result = (int) this.allocateTag();
-    //        recipeTagToTag.put(new Integer(recipeTag), result);
-            return recipeTag;
+            int result = (int) this.allocateTag();
+            recipeTagToTag.put(new Integer(recipeTag), result);
+            return result;
+        }
+
+        public ReadableArray translateChildHierarchyArray(ReadableArray hierarchyArr) {
+            if (recipeTagToTag == null || recipeTagToTag.size() <= 0) {
+                return hierarchyArr;
+            }
+
+            WritableArray newHierarchyArr = new WritableNativeArray();
+            for (int i = 0; i < hierarchyArr.size(); i++ ) {
+                int initialTag= hierarchyArr.getInt(i);
+                int translatedTag = translateTagIfNeeded(initialTag);
+                newHierarchyArr.pushInt(translatedTag);
+            }
+            return newHierarchyArr;
         }
 
 
@@ -429,7 +451,7 @@
         @Override
         protected void onDetachedFromWindow() {
             super.onDetachedFromWindow();
-            System.out.println("@@@@@@@@@@@@@@@@@ Now detaching: "+getRootViewTag());
+//            System.out.println("@@@@@@@@@@@@@@@@@ Now detaching: "+getRootViewTag());
 //            unmountReactApplication();
 //            ViewGroup parent = (ViewGroup) this.getParent();
 //            parent.removeView(this);
@@ -446,19 +468,22 @@
                 return;
             }
 
+            Looper looper = nativeModulesThread.getLooper();
+            Thread tr = looper.getThread();
+
+            System.out.println("@@@@@@@@@@@@@@@@@ "+getRootViewTag()+" alive? "+tr.isAlive()+" interrupted? "+tr.isInterrupted());
             if (nativeModulesThread.getLooper().getThread().isAlive()) {
+                System.out.println("@@@@@@@@@@@@@@@@@ "+getRootViewTag()+" using native modules QUEUE");
                 ctx.runOnNativeModulesQueueThread(runnable);
             } else {
+                System.out.println("@@@@@@@@@@@@@@@@@ "+getRootViewTag()+" using main QUEUE");
                 this.post(runnable);
             }
     //        final UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
         }
 
-        public void setInitialProps(ReadableMap initProps) {
-            if (initProps != null) {
-//                System.out.println("@@@@@@@@@@@@@ View props received for " + getRootViewTag());
-                this.initialProps = new WritableAdvancedMap(initProps);
-            }
+        public void setStoredProps(ReadableMap initProps) {
+            this.storedProps = initProps;
         }
 
 
