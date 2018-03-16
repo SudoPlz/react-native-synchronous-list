@@ -32,6 +32,8 @@
 
   self.recipeTagToTag = [NSMutableDictionary new];
   self.recipeTagToTag[@(1)] = rootTag;
+  self.recipeTagToTag[@(1000001)] = rootTag;
+    
   
   for (NSDictionary *call in recipe)
   {

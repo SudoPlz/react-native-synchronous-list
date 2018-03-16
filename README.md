@@ -1,6 +1,18 @@
 # react-native-synchronous-list
 
 
+
+### Android branch notes:
+
+| TODO | Status |
+| --- | --- |
+| Recipe registration implementation | ✅ |
+| SyncRootView implementation | ✅ |
+| RecyclerListView implementation | ✅ |
+| RecyclerListView row item item (extends `SyncRootView`) | ✅|
+| Reload working | :x: |
+
+
 ## Consept
 #### What:
 This is an infinite list implementation that uses a template defined in javascript to render it's (native) children through an interesting mechanism called [synchronous rendering](https://www.youtube.com/watch?v=HXKFQu2cP4c) first envisioned by [Tal Kol](https://medium.com/@talkol) from wix.
