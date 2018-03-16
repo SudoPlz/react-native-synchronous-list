@@ -471,12 +471,12 @@
             Looper looper = nativeModulesThread.getLooper();
             Thread tr = looper.getThread();
 
-            System.out.println("@@@@@@@@@@@@@@@@@ "+getRootViewTag()+" alive? "+tr.isAlive()+" interrupted? "+tr.isInterrupted());
+//            System.out.println("@@@@@@@@@@@@@@@@@ "+getRootViewTag()+" alive? "+tr.isAlive()+" interrupted? "+tr.isInterrupted());
             if (nativeModulesThread.getLooper().getThread().isAlive()) {
-                System.out.println("@@@@@@@@@@@@@@@@@ "+getRootViewTag()+" using native modules QUEUE");
+//                System.out.println("@@@@@@@@@@@@@@@@@ "+getRootViewTag()+" using native modules QUEUE");
                 ctx.runOnNativeModulesQueueThread(runnable);
             } else {
-                System.out.println("@@@@@@@@@@@@@@@@@ "+getRootViewTag()+" using main QUEUE");
+//                System.out.println("@@@@@@@@@@@@@@@@@ "+getRootViewTag()+" using main QUEUE");
                 this.post(runnable);
             }
     //        final UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);

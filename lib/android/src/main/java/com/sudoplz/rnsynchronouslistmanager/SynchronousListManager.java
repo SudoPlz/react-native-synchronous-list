@@ -41,6 +41,23 @@ public class SynchronousListManager extends ViewGroupManager <SPRecyclerView> {
             return "RCTSynchronousList";
         }
 
+        SPRecyclerView initListView(ReactContext context) {
+            SPRecyclerView lView = new SPRecyclerView(context);
+            lView.setNestedScrollingEnabled(true);
+            lView.setHorizontalScrollBarEnabled(true);
+
+            // setting the layout parameters
+//        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            lView.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);//or HORIZONTAL
+//            linearLayoutManager.setMe
+
+            // setting the layout manager (which will be responsible for laying out the views)
+            lView.setLayoutManager(linearLayoutManager);
+            return lView;
+        }
 
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
         @Override
@@ -53,21 +70,7 @@ public class SynchronousListManager extends ViewGroupManager <SPRecyclerView> {
 //        int calHeight = 1980;
 
         if (listView == null) {
-//            listView = new SPRecyclerView(context, initialData);
-            listView = new SPRecyclerView(context);
-            listView.setNestedScrollingEnabled(true);
-            listView.setHorizontalScrollBarEnabled(true);
-
-            // setting the layout parameters
-//        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            listView.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
-
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);//or HORIZONTAL
-//            linearLayoutManager.setMe
-
-            // setting the layout manager (which will be responsible for laying out the views)
-            listView.setLayoutManager(linearLayoutManager);
+            listView = initListView(context);
         } else if (hasInitialised == true) {
             // if the list has not been initialised yet, but SOMEHOW the list view was NOT null
             // that means the app reloaded, so let's remove the listView from it's parent (since it's going to be added on another parent)
@@ -88,6 +91,9 @@ public class SynchronousListManager extends ViewGroupManager <SPRecyclerView> {
     }
 
     public SPRecyclerView getListView() {
+        if (listView == null) {
+            listView = initListView(globals.getRcContext());
+        }
         return listView;
     }
 

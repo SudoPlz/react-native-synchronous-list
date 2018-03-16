@@ -1,9 +1,9 @@
 package com.sudoplz.rnsynchronouslistmanager.Views.List;
 
-import android.support.v4.widget.NestedScrollView;
+//import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
-import android.widget.TextView;
+//import android.widget.TextView;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
@@ -50,6 +50,13 @@ public class SPAdapter extends RecyclerView.Adapter <SPAdapter.SPViewHolder> {
 
     }
 
+
+    @Override
+    public void onBindViewHolder(SPViewHolder holder, int position) {
+        ReadableMap dataForChild = (ReadableMap) data.get(position);
+        holder.setItemData(dataForChild, position);
+    }
+
     public void setAdapterData(ArrayList initialData) {
         if (initialData != null && initialData.size() > 0) {
             this.data = initialData;
@@ -57,11 +64,46 @@ public class SPAdapter extends RecyclerView.Adapter <SPAdapter.SPViewHolder> {
         }
     }
 
-    @Override
-    public void onBindViewHolder(SPViewHolder holder, int position) {
-        ReadableMap dataForChild = (ReadableMap) data.get(position);
-        holder.setItemData(dataForChild, position);
+    public void prependData(ArrayList dataToPrepend) {
+        if (dataToPrepend != null && dataToPrepend.size() > 0) {
+            if (this.data != null && this.data.size() > 0) {
+                for (int i = 0; i < dataToPrepend.size(); i++) {
+                    ReadableMap dataForChild = (ReadableMap) dataToPrepend.get(i);
+                    this.data.add(0, dataForChild);
+                    notifyItemRangeInserted(0, dataToPrepend.size());
+                }
+            } else {
+                this.data = dataToPrepend;
+                notifyDataSetChanged();
+            }
+        }
     }
+
+    public void appendData(ArrayList dataToPrepend) {
+        if (dataToPrepend != null && dataToPrepend.size() > 0) {
+            if (this.data != null && this.data.size() > 0) {
+                int initialDataEndPosition = this.data.size();
+                for (int i = 0; i < dataToPrepend.size(); i++) {
+                    ReadableMap dataForChild = (ReadableMap) dataToPrepend.get(i);
+                    this.data.add(dataForChild);
+                }
+                notifyItemRangeInserted(initialDataEndPosition - 1, dataToPrepend.size());
+            } else {
+                this.data = dataToPrepend;
+                notifyDataSetChanged();
+            }
+        }
+    }
+
+    public void updateDataAtIndex(int indexToUpdate, ReadableMap updatedChild) {
+        if (updatedChild != null) {
+            if (this.data != null && this.data.size() > indexToUpdate) {
+                this.data.set(indexToUpdate, updatedChild);
+                notifyItemChanged(indexToUpdate);
+            }
+        }
+    }
+
 
     public void clearData() {
         if (this.data != null) {
@@ -80,6 +122,12 @@ public class SPAdapter extends RecyclerView.Adapter <SPAdapter.SPViewHolder> {
         }
         return 0;
     }
+
+
+
+    /////////////////////////////////////////////////////////////
+    //////////////////////// VIEW HOLDER ////////////////////////
+    /////////////////////////////////////////////////////////////
 
     class SPViewHolder extends RecyclerView.ViewHolder {
 

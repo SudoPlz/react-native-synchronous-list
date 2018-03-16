@@ -52,7 +52,7 @@ const complexDataObj = [{
   height: 150,
 }];
 
-for (const i = 11; i < 1500; i++) { 
+for (const i = 11; i < 30; i++) { 
   complexDataObj.push({
     name: `Row ${i}`,
     width: 400,
@@ -61,6 +61,40 @@ for (const i = 11; i < 1500; i++) {
 }
 
 class ListExample extends React.Component {
+  componentDidMount() {
+    setTimeout(() => {
+      if (this.synchronousList) {
+        // this.synchronousList.scrollToItem(20);
+
+        // this.synchronousList.prependDataToDataSource([
+        //   {
+        //     name: "Row -1",
+        //     width: 250,
+        //     height: 150,
+        //   },
+        //   {
+        //     name: "Row 0",
+        //     width: 250,
+        //     height: 150,
+        //   },
+        // ]);
+
+        // this.synchronousList.appendDataToDataSource([
+        //   {
+        //     name: "Row 32",
+        //     width: 250,
+        //     height: 150,
+        //   },
+        // ]);
+
+        // this.synchronousList.updateDataAtIndex(2, {
+        //   name: "Row 999",
+        //   width: 350,
+        //   height: 150,
+        // });
+      }
+    }, 5000);
+  }
   render() {
     return (
       <SynchronousList

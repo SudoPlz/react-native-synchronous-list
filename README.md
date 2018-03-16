@@ -80,7 +80,15 @@ Then all you have to do is render the list like a [normal js component](https://
 | dynamicViewSizes | bool | True if we'll be calculating the row sizes based on the props data or false if we'll be using the `rowHeight` and `rowWidth` static values | `false` |
 | rowHeight | number | The height of each row when using the list in static row size mode. | - |
 | rowWidth | number | The width of each row when using the list in static row size mode. | - |
-| templateName | string | The name of the template object we'll be using. (No need to change that) | 'RNSynchronousListRowTemplate' | 
+| templateName | string | The name of the template object we'll be using. (No need to change that) | 'RNSynchronousListRowTemplate' |
+
+## Exposed methods
+
+- (Promise) prependDataToDataSource(newData : Array) Prepends the newData to the list datasource
+- (Promise) appendDataToDataSource(newData : Array) Appends the newData to the list datasource
+- (Promise) updateDataAtIndex(index: int, newData : Object) Updates the data of the specified item
+- (void) scrollToItem(position: int) Scrolls to the position specified
+
 
 ## Example
 
