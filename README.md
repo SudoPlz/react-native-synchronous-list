@@ -2,17 +2,6 @@
 
 
 
-### Android branch notes:
-
-| TODO | Status |
-| --- | --- |
-| Recipe registration implementation | ✅ |
-| SyncRootView implementation | ✅ |
-| RecyclerListView implementation | ✅ |
-| RecyclerListView row item item (extends `SyncRootView`) | ✅|
-| Reload working | :x: |
-
-
 ## Consept
 #### What:
 This is an infinite list implementation that uses a template defined in javascript to render it's (native) children through an interesting mechanism called [synchronous rendering](https://www.youtube.com/watch?v=HXKFQu2cP4c) first envisioned by [Tal Kol](https://medium.com/@talkol) from wix.
@@ -48,7 +37,11 @@ or
 
 You should able to see this:
 
-<a href="https://cl.ly/0s2E1w2W2a2f" target="_blank"><img src="https://dha4w82d62smt.cloudfront.net/items/291j1U0E2a2x3j0O1C3K/Screen%20Recording%202018-02-14%20at%2006.53%20PM.gif" style="display: block;height: 40%;width: 40%;"/></a>
+iOS             |  Android
+:-------------------------:|:-------------------------:
+<a href="https://github.com/SudoPlz/react-native-synchronous-list/tree/master/RNExample/ios" target="_blank"><img src="https://dha4w82d62smt.cloudfront.net/items/291j1U0E2a2x3j0O1C3K/Screen%20Recording%202018-02-14%20at%2006.53%20PM.gif" style="display: block;height: 100%;width: 100%;"/></a>  |  <a href="https://github.com/SudoPlz/react-native-synchronous-list/tree/master/RNExample/android" target="_blank"><img src="https://cl.ly/1c2U050O1B0F/Screen%20Recording%202018-03-16%20at%2002.16%20PM.gif" style="display: block;height: 80%;width: 80%;"/></a>
+
+
 
 ## Caution
 
@@ -97,8 +90,14 @@ Then all you have to do is render the list like a [normal js component](https://
 See the RNExample folder
 
 ## Todo
-- Find out why there's a short delay when rendering thousands of children in our native list implementation
-- WIP Android version on the [#android branch](https://github.com/SudoPlz/react-native-synchronous-list/tree/android)
+
+| TODO | Status |
+| --- | --- |
+| Recipe registration implementation | ✅ |
+| SyncRootView implementation | ✅ |
+| RecyclerListView implementation | ✅ |
+| RecyclerListView row item item (extends `SyncRootView`) | ✅|
+| Reload working | :x: |
 
 ## License
 MIT © Ioannis Kokkinidis 2017-2018
