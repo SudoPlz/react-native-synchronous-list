@@ -17,7 +17,7 @@
     "babel-preset-react-native": "4.0.0",
     "jest": "22.3.0",
     "react-test-renderer": "16.2.0",
-    "react-native-synchronous-list": "file:../"
+    "react-native-synchronous-list": "latest"
   },
   "jest": {
     "preset": "react-native"
