@@ -39,7 +39,7 @@ You should able to see this:
 
 iOS             |  Android
 :-------------------------:|:-------------------------:
-<a href="https://github.com/SudoPlz/react-native-synchronous-list/tree/master/RNExample/ios" target="_blank"><img src="https://dha4w82d62smt.cloudfront.net/items/291j1U0E2a2x3j0O1C3K/Screen%20Recording%202018-02-14%20at%2006.53%20PM.gif" style="display: block;height: 100%;width: 100%;"/></a>  |  <a href="https://github.com/SudoPlz/react-native-synchronous-list/tree/master/RNExample/android" target="_blank"><img src="https://cl.ly/1c2U050O1B0F/Screen%20Recording%202018-03-16%20at%2002.16%20PM.gif" style="display: block;height: 80%;width: 80%;"/></a>
+<a href="https://github.com/SudoPlz/react-native-synchronous-list/tree/master/RNExample/ios" target="_blank"><img src="https://dha4w82d62smt.cloudfront.net/items/291j1U0E2a2x3j0O1C3K/Screen%20Recording%202018-02-14%20at%2006.53%20PM.gif"  height="640" width="320"/></a>  |  <a href="https://github.com/SudoPlz/react-native-synchronous-list/tree/master/RNExample/android" target="_blank"><img src="https://cl.ly/1c2U050O1B0F/Screen%20Recording%202018-03-16%20at%2002.16%20PM.gif" height="640" width="340"/></a>
 
 
 
@@ -53,24 +53,21 @@ That's still a WIP project and you should definitely not use it as it is on prod
 ### Step 1:
 Basically you first register a template synchronously by invoking the SyncRegistry.
 
-This project uses 2 different list implementations:
+[Here's](https://github.com/SudoPlz/react-native-synchronous-list/blob/master/RNExample/src/RowTemplate.js) how a template looks like and [here's](https://github.com/SudoPlz/react-native-synchronous-list/blob/master/RNExample/src/RowTemplate.js#L38) where we register it.
 
-A) One with static dimension rows ([here](https://github.com/SudoPlz/react-native-synchronous-list/blob/master/RNExample/src/StaticExample/StaticRowTemplate.js) is the JS template that we'll be using for that, and we register this template with our list [here](https://github.com/SudoPlz/react-native-synchronous-list/blob/master/RNExample/src/StaticExample/index.js#L13))
-
-B) One with dynamic dimension rows (and [here](https://github.com/SudoPlz/react-native-synchronous-list/blob/master/RNExample/src/DynamicExample/DynamicRowTemplate.js) is the JS template that we'll be using for that, and we register this template with our list [here](https://github.com/SudoPlz/react-native-synchronous-list/blob/master/RNExample/src/DynamicExample/index.js#L14))
-
-Those are just examples to give you an idea of how you could use this list.
+So we'll declare that jsx template and the native code will create a recipe out of it.
+Next time we want to create that view, the native code will create a new view based on that recipe (without the need to go to javascript) - it all happens on the native side now.
 
 ### Step 2:
-Prepare the native component for rendering (usually on `componentWillMount`)
+Prepare the native component for rendering
 
     this.synchronousList.prepareRows();
 
-In the example we just do it whenever we first get a [ref of the list](https://github.com/SudoPlz/react-native-synchronous-list/blob/master/RNExample/src/StaticExample/index.js#L27) though.
+In the example we just do it whenever we first get a [ref of the list](https://github.com/SudoPlz/react-native-synchronous-list/blob/c0af3b808059f9520c2f633210b2136ca60b6456/RNExample/src/ListExample.js#L70).
 
 
 ### Step 3:
-Then all you have to do is render the list like a [normal js component](https://github.com/SudoPlz/react-native-synchronous-list/blob/master/RNExample/src/App.js#L23).
+Then all you have to do is render the list like a [normal js component](https://github.com/SudoPlz/react-native-synchronous-list/blob/c0af3b808059f9520c2f633210b2136ca60b6456/RNExample/src/ListExample.js#L66).
 
 ## Available props
 
@@ -87,7 +84,7 @@ Then all you have to do is render the list like a [normal js component](https://
 
 ## Example
 
-See the RNExample folder
+See the [RNExample](https://github.com/SudoPlz/react-native-synchronous-list/tree/master/RNExample) folder
 
 ## Todo
 
@@ -97,7 +94,7 @@ See the RNExample folder
 | SyncRootView implementation | ✅ |
 | RecyclerListView implementation | ✅ |
 | RecyclerListView row item item (extends `SyncRootView`) | ✅|
-| Reload working | :x: |
+| Reload working ( [RN Issue here](https://github.com/facebook/react-native/issues/18413#issuecomment-373694707) )| :x: |
 
 ## License
 MIT © Ioannis Kokkinidis 2017-2018
