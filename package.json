@@ -1,6 +1,6 @@
 {
   "name": "react-native-synchronous-list",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A react-native list (for iOS only) that renders it's children synchronously",
   "keywords": [
     "synchronous",
