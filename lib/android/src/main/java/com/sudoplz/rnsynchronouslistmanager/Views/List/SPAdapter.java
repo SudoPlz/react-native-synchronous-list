@@ -1,6 +1,8 @@
 package com.sudoplz.rnsynchronouslistmanager.Views.List;
 
 //import android.support.v4.widget.NestedScrollView;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 //import android.widget.TextView;
@@ -29,6 +31,7 @@ public class SPAdapter extends RecyclerView.Adapter <SPAdapter.SPViewHolder> {
         if (initialData != null && initialData.size() > 0) {
             data = initialData;
         }
+
     }
 
     @Override
@@ -95,11 +98,17 @@ public class SPAdapter extends RecyclerView.Adapter <SPAdapter.SPViewHolder> {
         }
     }
 
-    public void updateDataAtIndex(int indexToUpdate, ReadableMap updatedChild) {
+    public void updateDataAtIndex(final int indexToUpdate, ReadableMap updatedChild) {
         if (updatedChild != null) {
             if (this.data != null && this.data.size() > indexToUpdate) {
                 this.data.set(indexToUpdate, updatedChild);
-                notifyItemChanged(indexToUpdate);
+                final SPAdapter self = this;
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    public void run() {
+                        System.out.println("\n@@@@@@@@@@@@@@@@@ Updating: "+indexToUpdate);
+                        self.notifyItemChanged(indexToUpdate);
+                    }
+                });
             }
         }
     }
