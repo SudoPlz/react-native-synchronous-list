@@ -1,8 +1,11 @@
 package com.sudoplz.rnsynchronouslistmanager.Views.List;
 
 
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.UiThread;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -25,6 +28,7 @@ public class SPRecyclerView extends RecyclerView {
     private final static String TAG = "SynchronousRecyclerView";
 //    private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 //    private final VelocityHelper mVelocityHelper = new VelocityHelper();
+    private boolean mRequestedLayout = false;
 
     public SPRecyclerView(ReactContext context) {
         this(context, null);
@@ -65,11 +69,6 @@ public class SPRecyclerView extends RecyclerView {
     }
 
 
-
-    protected void runOnUIThread(Runnable runnable) {
-        ((ReactContext) getContext()).runOnUiQueueThread(runnable);
-    }
-
     /////////////////////////////////////////////////////////////
     ////////////////////// EXPOSED METHODS //////////////////////
     /////////////////////////////////////////////////////////////
@@ -78,17 +77,10 @@ public class SPRecyclerView extends RecyclerView {
         Log.d(TAG, "@@@@@@@@@@@@@@ prepareRows RAN");
     }
 
+    @UiThread
     public void rcScrollToItem(final int position) {
-        final SPRecyclerView self = this;
-
-        runOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                //        this.scrollToPosition(position); // TODO <-- why doesn't scrollToPosition work?
-                self.smoothScrollToPosition(position);
-                //        Log.d(TAG, "@@@@@@@@@@@@@@ scrollToItem RAN "+position);
-            }
-        });
+        smoothScrollToPosition(position);
+//        scrollToPosition(position); // TODO <-- why doesn't scrollToPosition work?
     }
 
     public void rcPrependDataToDataSource(ReadableArray newData) {
@@ -103,11 +95,27 @@ public class SPRecyclerView extends RecyclerView {
 
     public void rcUpdateDataAtIndex(int indexToUpdate, ReadableMap updatedChild) {
         final SPAdapter adapter = (SPAdapter) getAdapter();
+        mRequestedLayout = false;
         adapter.updateDataAtIndex(indexToUpdate, updatedChild);
-//        Log.d(TAG, "@@@@@@@@@@@@@@ updateDataAtIndex RAN "+indexToUpdate);
-        // TODO Find why this doesn't update the view until the user scrolls ?!?!
     }
 
-
+    @Override
+    public void requestLayout() {
+        super.requestLayout();
+        // We need to intercept this method because if we don't our children will never update
+        // Check https://stackoverflow.com/questions/49371866/recyclerview-wont-update-child-until-i-scroll
+        if (!mRequestedLayout) {
+            mRequestedLayout = true;
+            this.post(new Runnable() {
+                @SuppressLint("WrongCall")
+                @Override
+                public void run() {
+                    mRequestedLayout = false;
+                    layout(getLeft(), getTop(), getRight(), getBottom());
+                    onLayout(false, getLeft(), getTop(), getRight(), getBottom());
+                }
+            });
+        }
+    }
 
 }
