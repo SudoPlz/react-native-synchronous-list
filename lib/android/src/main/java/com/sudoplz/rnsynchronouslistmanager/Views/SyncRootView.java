@@ -74,7 +74,7 @@
             });
 
             // setting the layout parameters
-            setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
             hasInit = false;
             mJSModuleName = moduleName;
@@ -223,9 +223,15 @@
         }
 
         @Override
+        protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+            System.out.println("@@@@@@@@@@@@@@@@@ onLayout");
+            super.onLayout(changed, left, top, right, bottom);
+        }
+
+        @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//            int viewRootTag = getRootViewTag();
-//            System.out.println("@@@@@@@@@@@@@ Views measured for " + viewRootTag);
+            int viewRootTag = getRootViewTag();
+            System.out.println("@@@@@@@@@@@@@ Views measured for " + viewRootTag);
             int widthSpec = MeasureSpec.makeMeasureSpec(FrameUtils.extractItemWidth(this.storedProps), MeasureSpec.EXACTLY);
             int heightSpec = MeasureSpec.makeMeasureSpec(FrameUtils.extractItemHeight(this.storedProps), MeasureSpec.EXACTLY);
 
