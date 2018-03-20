@@ -35,9 +35,9 @@ class SynchronousListModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void scrollToItem(int item) {
+    public void scrollToItem(int item, Boolean animated) {
         if (calendarInstance  != null) {
-            calendarInstance.rcScrollToItem(item);
+            calendarInstance.rcScrollToItem(item, animated);
         }
     }
 
