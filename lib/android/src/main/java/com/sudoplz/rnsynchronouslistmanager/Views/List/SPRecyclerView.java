@@ -2,6 +2,7 @@ package com.sudoplz.rnsynchronouslistmanager.Views.List;
 
 
 import android.annotation.SuppressLint;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
@@ -9,12 +10,18 @@ import android.support.annotation.UiThread;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.views.scroll.OnScrollDispatchHelper;
+import com.facebook.react.views.scroll.ScrollEvent;
+import com.facebook.react.views.scroll.ScrollEventType;
 import com.sudoplz.rnsynchronouslistmanager.Utils.SPGlobals;
 import com.sudoplz.rnsynchronouslistmanager.Utils.WritableAdvancedArray;
 
@@ -26,9 +33,11 @@ public class SPRecyclerView extends RecyclerView {
 //public class SynchronousRecyclerView extends SyncRootView {
 
     private final static String TAG = "SynchronousRecyclerView";
-//    private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 //    private final VelocityHelper mVelocityHelper = new VelocityHelper();
     private boolean mRequestedLayout = false;
+    private int mFirstVisibleIndex, mLastVisibleIndex;
+
+//    private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 
     public SPRecyclerView(ReactContext context) {
         this(context, null);
@@ -39,12 +48,43 @@ public class SPRecyclerView extends RecyclerView {
         // setting the list adapter (which will be holding the views and binding props to them)
         setAdapter(new SPAdapter(WritableAdvancedArray.shallowToArrayList(newData)));
 
+//        this.addOnScrollListener(new OnScrollListener() {
+//
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+////                System.out.println("\n@@@@@@@@@@@@@@@@@ dx: "+dx+" dy: "+dy);
+//                if (dy > 0) {
+//                    // Scrolling up
+//                    System.out.println("\n@@@@@@@@@@@@@@@@@ Scrolling down");
+//                } else {
+//                    // Scrolling down
+//                    System.out.println("\n@@@@@@@@@@@@@@@@@ Scrolling up");
+//                }
+//            }
+//
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//
+//                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+//                    // Do something
+//                    System.out.println("\n@@@@@@@@@@@@@@@@@ FLING");
+//                } else if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+//                    // Do something
+//                    System.out.println("\n@@@@@@@@@@@@@@@@@ SCROLL");
+//                } else {
+//                    // Do something
+//                    System.out.println("\n@@@@@@@@@@@@@@@@@ other: "+newState);
+//                }
+//            }
+//        });
+
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        System.out.println("\n@@@@@@@@@@@@@@@@@ onLayout WOULD run");
     }
 
     public void setData(ReadableArray newData) {
@@ -65,7 +105,6 @@ public class SPRecyclerView extends RecyclerView {
             adapter.clearData();
         }
         this.removeAllViewsInLayout();
-        // TODO: go through all the SyncRootViews and get a new ref to the thread
     }
 
 
@@ -77,9 +116,13 @@ public class SPRecyclerView extends RecyclerView {
         Log.d(TAG, "@@@@@@@@@@@@@@ prepareRows RAN");
     }
     @UiThread
-    public void rcScrollToItem(final int position) {
-//        smoothScrollToPosition(position);
-        scrollToPosition(position); // TODO <-- why doesn't scrollToPosition work?
+    public void rcScrollToItem(int position, Boolean animated) {
+        if (animated) {
+            smoothScrollToPosition(position);
+        } else {
+            mRequestedLayout = false;
+            scrollToPosition(position);
+        }
     }
 
     public void rcPrependDataToDataSource(ReadableArray newData) {
@@ -114,6 +157,82 @@ public class SPRecyclerView extends RecyclerView {
                     onLayout(false, getLeft(), getTop(), getRight(), getBottom());
                 }
             });
+        }
+    }
+
+    private ReactContext getReactContext() {
+        return (ReactContext) ((ContextThemeWrapper) getContext()).getBaseContext();
+    }
+
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+
+//        if (mOnScrollDispatchHelper.onScrollChanged(l, t)) {
+//            getReactContext().getNativeModule(UIManagerModule.class).getEventDispatcher()
+//                    .dispatchEvent(ScrollEvent.obtain(
+//                            getId(),
+//                            ScrollEventType.SCROLL,
+//                            0, /* offsetX = 0, horizontal scrolling only */
+//                            computeVerticalScrollOffset(),
+//                            mOnScrollDispatchHelper.getXFlingVelocity(),
+//                            mOnScrollDispatchHelper.getYFlingVelocity(),
+//                            getWidth(),
+//                            computeVerticalScrollRange(),
+//                            getWidth(),
+//                            getHeight()));
+//        }
+
+        // try to figure which child is the most visible on screen
+        final int firstIndex = ((LinearLayoutManager) getLayoutManager()).findFirstVisibleItemPosition();
+        final int lastIndex = ((LinearLayoutManager) getLayoutManager()).findLastVisibleItemPosition();
+
+        if (firstIndex != mFirstVisibleIndex || lastIndex != mLastVisibleIndex) {
+            mFirstVisibleIndex = firstIndex;
+            mLastVisibleIndex = lastIndex;
+
+            /**
+             * getReactContext().getNativeModule(UIManagerModule.class).getEventDispatcher()
+             .dispatchEvent(new VisibleItemsChangeEvent(
+             getId(),
+             SystemClock.nanoTime(),
+             firstIndex,
+             lastIndex));
+             */
+
+            // if it's not the same
+            int mostVisible;
+            if (mFirstVisibleIndex != mLastVisibleIndex) {
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) this.getLayoutManager();
+
+                // get the visible rect of the first item
+                Rect firstPercentageRect = new Rect();
+                linearLayoutManager.findViewByPosition(mFirstVisibleIndex).getGlobalVisibleRect(firstPercentageRect);
+
+                // get the visible rect of the last item
+                Rect lastPercentageRect = new Rect();
+                linearLayoutManager.findViewByPosition(mLastVisibleIndex).getGlobalVisibleRect(lastPercentageRect );
+
+                // if that's a vertical list
+                if (linearLayoutManager.getOrientation() == VERTICAL) {
+                    if (firstPercentageRect.height() > lastPercentageRect.height()) {
+                        mostVisible = mFirstVisibleIndex;
+                    } else {
+                        mostVisible = mLastVisibleIndex;
+                    }
+                } else { // else if it's a horizontal list
+                    if (firstPercentageRect.width() > lastPercentageRect.width()) {
+                        mostVisible = mFirstVisibleIndex;
+                    } else {
+                        mostVisible = mLastVisibleIndex;
+                    }
+                }
+
+            } else {
+                mostVisible = mFirstVisibleIndex;
+            }
+
+            System.out.println("@@@@@@@@@@@@@@@@@ onScrollChanged first visible: "+firstIndex+" last visible: "+lastIndex+" most visible: "+mostVisible);
         }
     }
 
