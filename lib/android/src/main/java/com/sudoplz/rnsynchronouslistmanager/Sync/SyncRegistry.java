@@ -15,8 +15,8 @@ import java.util.Map;
 
 public class SyncRegistry extends ReactContextBaseJavaModule {
 
-    private Map<String, Recipe> recipeRegistry;
-    private long lastTag;
+    protected Map<String, Recipe> recipeRegistry;
+    protected long lastTag;
 
     public SyncRegistry(ReactApplicationContext reactContext) {
         super(reactContext);

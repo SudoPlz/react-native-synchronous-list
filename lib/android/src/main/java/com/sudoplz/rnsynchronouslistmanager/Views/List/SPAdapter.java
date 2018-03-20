@@ -138,9 +138,9 @@ public class SPAdapter extends RecyclerView.Adapter <SPAdapter.SPViewHolder> {
     //////////////////////// VIEW HOLDER ////////////////////////
     /////////////////////////////////////////////////////////////
 
-    class SPViewHolder extends RecyclerView.ViewHolder {
+    protected class SPViewHolder extends RecyclerView.ViewHolder {
 
-        private SyncRootView curView;
+        protected SyncRootView curView;
         public SPViewHolder(SyncRootView itemView) {
             super(itemView);
             curView = itemView;

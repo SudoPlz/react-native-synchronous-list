@@ -34,7 +34,7 @@ public class SPRecyclerView extends RecyclerView {
 
     private final static String TAG = "SynchronousRecyclerView";
 //    private final VelocityHelper mVelocityHelper = new VelocityHelper();
-    private boolean mRequestedLayout = false;
+    protected boolean mRequestedLayout = false;
     private int mFirstVisibleIndex, mLastVisibleIndex;
 
 //    private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
@@ -160,7 +160,7 @@ public class SPRecyclerView extends RecyclerView {
         }
     }
 
-    private ReactContext getReactContext() {
+    public ReactContext getReactContext() {
         return (ReactContext) ((ContextThemeWrapper) getContext()).getBaseContext();
     }
 
