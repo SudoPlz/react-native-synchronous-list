@@ -76,11 +76,10 @@ public class SPRecyclerView extends RecyclerView {
     public void prepareRows(final Promise promise) {
         Log.d(TAG, "@@@@@@@@@@@@@@ prepareRows RAN");
     }
-
     @UiThread
     public void rcScrollToItem(final int position) {
-        smoothScrollToPosition(position);
-//        scrollToPosition(position); // TODO <-- why doesn't scrollToPosition work?
+//        smoothScrollToPosition(position);
+        scrollToPosition(position); // TODO <-- why doesn't scrollToPosition work?
     }
 
     public void rcPrependDataToDataSource(ReadableArray newData) {
