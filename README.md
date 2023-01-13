@@ -4,7 +4,7 @@
 
 ## Consept
 #### What:
-This is an infinite list implementation that uses a template defined in javascript to render it's (native) children through an interesting mechanism called [synchronous rendering](https://www.youtube.com/watch?v=HXKFQu2cP4c) first envisioned by [Tal Kol](https://medium.com/@talkol) from wix.
+This is an infinite list implementation that uses a template defined in javascript to render it's (native) children through an interesting mechanism called [synchronous rendering](https://www.youtube.com/watch?v=wUNC6pXSgqA) first envisioned by [Tal Kol](https://medium.com/@talkol) from wix.
 
 #### Why:
 Because trying to render children on the fly while scrolling sends to much information through the RNBridge and blocks it.
